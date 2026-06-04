@@ -451,12 +451,12 @@ export default function TemplateCreatorPage() {
                          {/* Section Background Preview */}
                          {bgUrl && (
                             <div 
-                              className={`absolute inset-0 z-0 ${isDefaultSilhouette ? 'bg-contain' : 'bg-cover'} bg-no-repeat bg-center pointer-events-none`}
+                              className="absolute inset-0 z-0 bg-contain bg-no-repeat bg-center pointer-events-none"
                               style={{ 
                                 backgroundImage: `url(${getImageUrl(bgUrl)})`,
                                 opacity: isDefaultSilhouette ? 0.3 : (s.bgOpacity || 0.1),
                                 mixBlendMode: isDefaultSilhouette ? 'multiply' : 'normal',
-                                backgroundSize: isDefaultSilhouette ? '50%' : 'cover'
+                                backgroundSize: isDefaultSilhouette ? '50%' : 'contain'
                               }}
                             />
                          )}

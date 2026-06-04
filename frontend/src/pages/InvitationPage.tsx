@@ -356,11 +356,11 @@ export default function InvitationPage() {
         {/* Background Layer (Custom Only) */}
         {sectionBg && !sectionBg.includes('default_silhouette') && (
           <div 
-            className={`absolute inset-0 z-0 bg-cover bg-no-repeat bg-center`}
+            className={`absolute inset-0 z-0 bg-contain bg-no-repeat bg-center`}
             style={{ 
               backgroundImage: `url(${sectionBg})`, 
               opacity: bgOpacity,
-              backgroundSize: 'cover'
+              backgroundSize: 'contain'
             }}
           />
         )}
