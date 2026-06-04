@@ -199,7 +199,10 @@ export default function InvitationPage() {
   const addToCalendar = () => {
     if (!data) return;
     const dateStr = data.wedding_date.replace(/-/g, '');
-    const url = `https://www.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent('Wedding: ' + data.bride_name + ' & ' + data.groom_name)}&dates=${dateStr}/${dateStr}&details=${encodeURIComponent('Join us for our wedding ceremony!')}&location=${encodeURIComponent(data.venue_name + ', ' + data.venue_address)}`;
+    const names = data.custom_config?.swap_names 
+      ? `${data.bride_name} & ${data.groom_name}` 
+      : `${data.groom_name} & ${data.bride_name}`;
+    const url = `https://www.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent('Wedding: ' + names)}&dates=${dateStr}/${dateStr}&details=${encodeURIComponent('Join us for our wedding ceremony!')}&location=${encodeURIComponent(data.venue_name + ', ' + data.venue_address)}`;
     window.open(url, '_blank');
   };
 
@@ -387,25 +390,51 @@ export default function InvitationPage() {
                     {data.hero_subtitle_2 || "We extend a warm invitation to join the wedding celebration of"}
                   </p>
                 </div>
-                <div className="space-y-1">
-                  <h1 className={`${styles.font} text-4xl md:text-7xl`} style={{ ...(styles.isCustom ? { color: styles.colors.primary } : {}), fontSize: section.fontSize ? `${section.fontSize}px` : undefined }}>{data.groom_name}</h1>
-                  <div className="space-y-0.5 opacity-70" style={{ ...(styles.isCustom ? { color: styles.colors.text } : {}) }}>
-                    <p className="italic text-sm">Son of {data.groom_parents}</p>
-                    {data.groom_family && <p className="font-bold tracking-widest text-[11px] uppercase">{data.groom_family}</p>}
-                  </div>
-                </div>
-                <div className="flex items-center justify-center gap-3 w-full">
-                  <div className="h-px w-10 bg-current opacity-20" />
-                  <span className="text-3xl font-serif italic opacity-40">&</span>
-                  <div className="h-px w-10 bg-current opacity-20" />
-                </div>
-                <div className="space-y-1">
-                  <h1 className={`${styles.font} text-4xl md:text-7xl`} style={{ ...(styles.isCustom ? { color: styles.colors.primary } : {}), fontSize: section.fontSize ? `${section.fontSize}px` : undefined }}>{data.bride_name}</h1>
-                  <div className="space-y-0.5 opacity-70" style={{ ...(styles.isCustom ? { color: styles.colors.text } : {}) }}>
-                    <p className="italic text-sm">Daughter of {data.bride_parents}</p>
-                    {data.bride_family && <p className="font-bold tracking-widest text-[11px] uppercase">{data.bride_family}</p>}
-                  </div>
-                </div>
+                {data.custom_config?.swap_names ? (
+                  <>
+                    <div className="space-y-1">
+                      <h1 className={`${styles.font} text-4xl md:text-7xl`} style={{ ...(styles.isCustom ? { color: styles.colors.primary } : {}), fontSize: section.fontSize ? `${section.fontSize}px` : undefined }}>{data.bride_name}</h1>
+                      <div className="space-y-0.5 opacity-70" style={{ ...(styles.isCustom ? { color: styles.colors.text } : {}) }}>
+                        <p className="italic text-sm">Daughter of {data.bride_parents}</p>
+                        {data.bride_family && <p className="font-bold tracking-widest text-[11px] uppercase">{data.bride_family}</p>}
+                      </div>
+                    </div>
+                    <div className="flex items-center justify-center gap-3 w-full">
+                      <div className="h-px w-10 bg-current opacity-20" />
+                      <span className="text-3xl font-serif italic opacity-40">&</span>
+                      <div className="h-px w-10 bg-current opacity-20" />
+                    </div>
+                    <div className="space-y-1">
+                      <h1 className={`${styles.font} text-4xl md:text-7xl`} style={{ ...(styles.isCustom ? { color: styles.colors.primary } : {}), fontSize: section.fontSize ? `${section.fontSize}px` : undefined }}>{data.groom_name}</h1>
+                      <div className="space-y-0.5 opacity-70" style={{ ...(styles.isCustom ? { color: styles.colors.text } : {}) }}>
+                        <p className="italic text-sm">Son of {data.groom_parents}</p>
+                        {data.groom_family && <p className="font-bold tracking-widest text-[11px] uppercase">{data.groom_family}</p>}
+                      </div>
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <div className="space-y-1">
+                      <h1 className={`${styles.font} text-4xl md:text-7xl`} style={{ ...(styles.isCustom ? { color: styles.colors.primary } : {}), fontSize: section.fontSize ? `${section.fontSize}px` : undefined }}>{data.groom_name}</h1>
+                      <div className="space-y-0.5 opacity-70" style={{ ...(styles.isCustom ? { color: styles.colors.text } : {}) }}>
+                        <p className="italic text-sm">Son of {data.groom_parents}</p>
+                        {data.groom_family && <p className="font-bold tracking-widest text-[11px] uppercase">{data.groom_family}</p>}
+                      </div>
+                    </div>
+                    <div className="flex items-center justify-center gap-3 w-full">
+                      <div className="h-px w-10 bg-current opacity-20" />
+                      <span className="text-3xl font-serif italic opacity-40">&</span>
+                      <div className="h-px w-10 bg-current opacity-20" />
+                    </div>
+                    <div className="space-y-1">
+                      <h1 className={`${styles.font} text-4xl md:text-7xl`} style={{ ...(styles.isCustom ? { color: styles.colors.primary } : {}), fontSize: section.fontSize ? `${section.fontSize}px` : undefined }}>{data.bride_name}</h1>
+                      <div className="space-y-0.5 opacity-70" style={{ ...(styles.isCustom ? { color: styles.colors.text } : {}) }}>
+                        <p className="italic text-sm">Daughter of {data.bride_parents}</p>
+                        {data.bride_family && <p className="font-bold tracking-widest text-[11px] uppercase">{data.bride_family}</p>}
+                      </div>
+                    </div>
+                  </>
+                )}
                 <div className="pt-6 space-y-2">
                   <div className="w-40 h-px mx-auto opacity-50" style={styles.isCustom ? { backgroundColor: styles.colors.secondary } : { backgroundColor: '#D4AF37' }} />
                   <p className={`text-3xl md:text-4xl ${styles.font} font-bold tracking-widest`} style={styles.isCustom ? { color: styles.colors.primary } : {}}>
@@ -719,7 +748,7 @@ export default function InvitationPage() {
             </motion.div>
             <div className="space-y-2">
               <h2 className={`text-3xl ${styles.font} tracking-widest uppercase`} style={styles.isCustom ? { color: styles.colors.primary } : { color: '#1A1A1A' }}>
-                {data.groom_name} & {data.bride_name}
+                {data.custom_config?.swap_names ? `${data.bride_name} & ${data.groom_name}` : `${data.groom_name} & ${data.bride_name}`}
               </h2>
               <p className="text-xs uppercase tracking-[0.4em] opacity-40">Invitation</p>
             </div>
@@ -798,7 +827,7 @@ export default function InvitationPage() {
             <LogoIcon className="w-6 h-6 fill-current" />
             <span className="uppercase text-[10px] tracking-[0.5em] font-bold">AuraVows Premium</span>
          </div>
-         <p className="text-xs uppercase tracking-widest mb-2">© 2026 {data.bride_name} & {data.groom_name}'s Wedding</p>
+         <p className="text-xs uppercase tracking-widest mb-2">© 2026 {data.custom_config?.swap_names ? `${data.bride_name} & ${data.groom_name}` : `${data.groom_name} & ${data.bride_name}`}'s Wedding</p>
          <p className="text-[9px] uppercase tracking-[0.2em] font-bold opacity-50">Powered by AuraVows</p>
       </footer>
     </div>

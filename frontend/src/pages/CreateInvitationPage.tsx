@@ -30,7 +30,7 @@ export default function CreateInvitationPage() {
     template: 'royal',
     hero_bg_image: '',
     hero_bg_opacity: 0.5,
-    custom_config: {},
+    custom_config: {} as any,
     background_music_url: '',
     gallery_photos: [] as string[],
     event_timeline: [] as any[],
@@ -241,6 +241,29 @@ export default function CreateInvitationPage() {
                       />
                     </div>
                   </div>
+                </div>
+
+                <div className="border-t border-gray-100 p-8 flex items-center justify-between bg-gray-50/50">
+                  <div className="space-y-1">
+                    <h4 className="text-xs font-bold text-wedding-dark uppercase tracking-wider">Swap Display Order</h4>
+                    <p className="text-[10px] text-gray-400 italic">Show Bride's name first instead of Groom's name</p>
+                  </div>
+                  <button 
+                    type="button"
+                    onClick={() => {
+                      const currentConfig = formData.custom_config || {};
+                      setFormData(prev => ({
+                        ...prev,
+                        custom_config: {
+                          ...currentConfig,
+                          swap_names: !currentConfig.swap_names
+                        }
+                      }));
+                    }}
+                    className={`w-12 h-6 rounded-full relative transition-all duration-300 ${formData.custom_config?.swap_names ? 'bg-wedding-secondary' : 'bg-gray-200'}`}
+                  >
+                    <div className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-all duration-300 ${formData.custom_config?.swap_names ? 'left-7' : 'left-1'}`}></div>
+                  </button>
                 </div>
               </section>
 

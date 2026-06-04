@@ -124,7 +124,7 @@ export default function ClientDashboard() {
       {invitation && (
         <div className="print-header text-center py-10 border-b-2 border-wedding-gold/20 mb-10">
             <h2 className="text-3xl font-serif italic text-wedding-dark mb-2">
-                {invitation.bride_name} & {invitation.groom_name}
+                {invitation.custom_config?.swap_names ? `${invitation.bride_name} & ${invitation.groom_name}` : `${invitation.groom_name} & ${invitation.bride_name}`}
             </h2>
             <div className="flex justify-center items-center gap-6 text-[10px] uppercase tracking-[0.2em] text-gray-500 font-bold">
                 <span>Guest List Report</span>
@@ -141,7 +141,7 @@ export default function ClientDashboard() {
         <div className="mb-10 flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6 no-print">
           <div>
             <h2 className="text-3xl md:text-4xl font-bold text-wedding-dark mb-2">Guest List Control</h2>
-            <p className="text-wedding-gray font-medium">Real-time RSVP tracking for {invitation ? `${invitation.bride_name} & ${invitation.groom_name}` : id}</p>
+            <p className="text-wedding-gray font-medium">Real-time RSVP tracking for {invitation ? (invitation.custom_config?.swap_names ? `${invitation.bride_name} & ${invitation.groom_name}` : `${invitation.groom_name} & ${invitation.bride_name}`) : id}</p>
           </div>
           
           <div className="flex flex-col sm:flex-row gap-4 w-full lg:w-auto">
@@ -337,7 +337,7 @@ export default function ClientDashboard() {
       <div className="print-footer text-center py-10 border-t border-gray-100 mt-20">
           <p className="font-serif italic text-wedding-dark text-lg mb-2">Thank you for sharing our special day!</p>
           <p className="text-[10px] text-wedding-gold uppercase tracking-[0.4em] font-bold">
-              {invitation ? `${invitation.bride_name} & ${invitation.groom_name}` : 'Wedding Event'}
+              {invitation ? (invitation.custom_config?.swap_names ? `${invitation.bride_name} & ${invitation.groom_name}` : `${invitation.groom_name} & ${invitation.bride_name}`) : 'Wedding Event'}
           </p>
           <p className="text-[8px] text-gray-400 mt-6">Generated on {new Date().toLocaleString()}</p>
       </div>

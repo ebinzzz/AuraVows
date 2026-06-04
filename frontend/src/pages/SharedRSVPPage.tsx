@@ -22,6 +22,7 @@ interface Invitation {
   wedding_date: string;
   venue_name: string;
   venue_address: string;
+  custom_config?: any;
 }
 
 export default function SharedRSVPPage() {
@@ -106,7 +107,11 @@ export default function SharedRSVPPage() {
         </div>
         <div className="relative z-10 max-w-4xl mx-auto">
             <h1 className="text-3xl md:text-4xl font-serif italic mb-3">
-                {invitation.bride_name} <span className="text-wedding-lightGold">&</span> {invitation.groom_name}
+                {invitation.custom_config?.swap_names ? (
+                    <>{invitation.bride_name} <span className="text-wedding-lightGold">&</span> {invitation.groom_name}</>
+                ) : (
+                    <>{invitation.groom_name} <span className="text-wedding-lightGold">&</span> {invitation.bride_name}</>
+                )}
             </h1>
             <p className="text-wedding-lightGold uppercase tracking-[0.4em] text-[10px] md:text-xs font-bold mb-6">Guest List Dashboard</p>
             <div className="flex flex-wrap justify-center gap-4 text-xs">
@@ -125,7 +130,7 @@ export default function SharedRSVPPage() {
       {/* Print Header */}
       <div className="print-header text-center py-12 border-b-4 border-double border-wedding-gold/30 mb-8">
         <h2 className="text-4xl font-serif italic text-wedding-dark mb-4">
-            {invitation.bride_name} & {invitation.groom_name}
+            {invitation.custom_config?.swap_names ? `${invitation.bride_name} & ${invitation.groom_name}` : `${invitation.groom_name} & ${invitation.bride_name}`}
         </h2>
         <div className="flex justify-center items-center gap-8 text-xs uppercase tracking-widest text-gray-500 font-bold">
             <span>Wedding Guest List</span>
@@ -298,7 +303,7 @@ export default function SharedRSVPPage() {
       <div className="print-footer text-center py-12 border-t border-gray-100 mt-20">
          <p className="font-serif italic text-wedding-dark text-lg mb-2">Thank you for sharing our joy!</p>
          <p className="text-[10px] text-wedding-gold uppercase tracking-[0.4em] font-bold">
-            {invitation.bride_name} & {invitation.groom_name}
+            {invitation.custom_config?.swap_names ? `${invitation.bride_name} & ${invitation.groom_name}` : `${invitation.groom_name} & ${invitation.bride_name}`}
          </p>
          <p className="text-[8px] text-gray-400 mt-4">Printed on {new Date().toLocaleDateString()} • {new Date().toLocaleTimeString()}</p>
       </div>

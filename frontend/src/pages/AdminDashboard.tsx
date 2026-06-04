@@ -14,6 +14,7 @@ interface Invitation {
   template: string;
   total_rsvps: number;
   total_guests: number;
+  custom_config?: any;
 }
 
 export default function AdminDashboard() {
@@ -220,7 +221,11 @@ export default function AdminDashboard() {
                       </div>
                       
                       <h3 className="text-2xl font-bold text-wedding-primary mb-6 leading-tight">
-                        {invite.bride_name} <span className="text-wedding-secondary font-serif italic font-normal">&</span> {invite.groom_name}
+                        {invite.custom_config?.swap_names ? (
+                          <>{invite.bride_name} <span className="text-wedding-secondary font-serif italic font-normal">&</span> {invite.groom_name}</>
+                        ) : (
+                          <>{invite.groom_name} <span className="text-wedding-secondary font-serif italic font-normal">&</span> {invite.bride_name}</>
+                        )}
                       </h3>
                       
                       <div className="space-y-4 mb-10">

@@ -131,7 +131,11 @@ export default function AfterMarriagePage() {
           <div className="space-y-4">
             <h2 className="uppercase tracking-[0.6em] text-xs font-bold text-[#B89462] opacity-80">Happily Ever After</h2>
             <h1 className="text-5xl md:text-8xl font-light italic leading-tight">
-              {data.groom_name} <span className="text-[#B89462]">&</span> {data.bride_name}
+              {data.custom_config?.swap_names ? (
+                <>{data.bride_name} <span className="text-[#B89462]">&</span> {data.groom_name}</>
+              ) : (
+                <>{data.groom_name} <span className="text-[#B89462]">&</span> {data.bride_name}</>
+              )}
             </h1>
             <p className="text-sm md:text-lg tracking-[0.2em] uppercase opacity-60">
               {new Date(data.wedding_date).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
@@ -220,7 +224,7 @@ export default function AfterMarriagePage() {
           
           <div className="pt-8">
             <p className="font-serif text-3xl font-light italic tracking-widest text-[#B89462]">
-              With Love, {data.groom_name} & {data.bride_name}
+              With Love, {data.custom_config?.swap_names ? `${data.bride_name} & ${data.groom_name}` : `${data.groom_name} & ${data.bride_name}`}
             </p>
           </div>
         </div>
