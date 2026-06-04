@@ -1,0 +1,10 @@
+fastapi
+uvicorn
+asyncpg
+pydantic[email]
+python-jose[cryptography]
+passlib[bcrypt]
+bcrypt==3.2.0
+python-multipart
+python-nanoid
+python-dotenv
