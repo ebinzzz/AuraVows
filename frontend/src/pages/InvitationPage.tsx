@@ -64,6 +64,7 @@ interface CustomTemplate {
     showFlowers?: boolean;
     silhouetteSize?: number;
     silhouetteOpacity?: number;
+    showSilhouette?: boolean;
   };
 }
 
@@ -312,6 +313,7 @@ export default function InvitationPage() {
         showFlowers: cfg.showFlowers || false,
         silhouetteSize: cfg.silhouetteSize || 200,
         silhouetteOpacity: cfg.silhouetteOpacity ?? 0.3,
+        showSilhouette: cfg.showSilhouette !== false,
         custom_config: data.custom_config || {}
       };
     }
@@ -344,22 +346,21 @@ export default function InvitationPage() {
 
   const renderSection = (section: any) => {
     const type = section.type || section;
-    const sectionBg = getImageUrl(section.bgImage) || (type === 'hero' && !styles.heroBgImage ? getImageUrl(DEFAULT_SILHOUETTE) : '');
+    const sectionBg = getImageUrl(section.bgImage) || (type === 'hero' && !styles.heroBgImage && styles.showSilhouette !== false ? getImageUrl(DEFAULT_SILHOUETTE) : '');
     const bgOpacity = section.bgOpacity ?? (type === 'hero' ? styles.heroBgOpacity : 0.1);
 
     return (
       <section 
         className={`relative overflow-hidden ${type === 'hero' ? 'pt-8 pb-12' : 'py-12'} flex flex-col items-center justify-center text-center px-4`}
-        style={styles.isCustom ? { backgroundColor: styles.colors.bg } : {}}
       >
         {/* Background Layer (Custom Only) */}
         {sectionBg && !sectionBg.includes('default_silhouette') && (
           <div 
-            className={`absolute inset-0 z-0 bg-contain bg-no-repeat bg-center`}
+            className={`absolute inset-0 z-0 bg-cover bg-no-repeat bg-center`}
             style={{ 
               backgroundImage: `url(${sectionBg})`, 
               opacity: bgOpacity,
-              backgroundSize: 'contain'
+              backgroundSize: 'cover'
             }}
           />
         )}
@@ -445,7 +446,7 @@ export default function InvitationPage() {
                 </div>
 
                 {/* Default Silhouette above wording */}
-                {type === 'hero' && !styles.heroBgImage && (
+                {type === 'hero' && !styles.heroBgImage && styles.showSilhouette !== false && (
                   <div className="pt-8 flex justify-center">
                     <motion.img 
                       initial={{ opacity: 0, y: 10 }}
@@ -739,62 +740,75 @@ export default function InvitationPage() {
   }
 
   return (
-    <div 
-      className={`min-h-screen relative selection:bg-wedding-gold selection:text-white`} 
-      style={styles.isCustom ? { backgroundColor: styles.colors.bg, color: styles.colors.text } : {}}
-    >
-      {/* Welcome Overlay (Ensures Music Plays on Mobile) */}
-      {showOverlay && (
-        <motion.div 
-          initial={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          className="fixed inset-0 z-[200] flex items-center justify-center bg-white"
-          style={styles.isCustom ? { backgroundColor: styles.colors.bg } : {}}
-        >
-          <div className="text-center space-y-8 p-12">
-            <motion.div
-              animate={{ scale: [1, 1.1, 1] }}
-              transition={{ repeat: Infinity, duration: 2 }}
-              className="flex justify-center"
-            >
-              <LogoIcon className="w-16 h-16" style={styles.isCustom ? { color: styles.colors.primary } : { color: '#D4AF37' }} />
-            </motion.div>
-            <div className="space-y-2">
-              <h2 className={`text-3xl ${styles.font} tracking-widest uppercase`} style={styles.isCustom ? { color: styles.colors.primary } : { color: '#1A1A1A' }}>
-                {data.custom_config?.swap_names ? `${data.bride_name} & ${data.groom_name}` : `${data.groom_name} & ${data.bride_name}`}
-              </h2>
-              <p className="text-xs uppercase tracking-[0.4em] opacity-40">Invitation</p>
+    <div className="min-h-screen bg-[#e8e6f4] flex justify-center items-start sm:py-8 selection:bg-wedding-gold selection:text-white">
+      <div 
+        className="w-full sm:max-w-[450px] min-h-screen sm:min-h-[850px] sm:shadow-2xl sm:rounded-[2.5rem] relative overflow-hidden flex flex-col"
+        style={styles.isCustom ? { backgroundColor: styles.colors.bg, color: styles.colors.text } : {}}
+      >
+        {/* Welcome Overlay (Ensures Music Plays on Mobile) */}
+        {showOverlay && (
+          <motion.div 
+            initial={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[200] flex items-center justify-center bg-white"
+            style={styles.isCustom ? { backgroundColor: styles.colors.bg } : {}}
+          >
+            <div className="text-center space-y-8 p-12">
+              <motion.div
+                animate={{ scale: [1, 1.1, 1] }}
+                transition={{ repeat: Infinity, duration: 2 }}
+                className="flex justify-center"
+              >
+                <LogoIcon className="w-16 h-16" style={styles.isCustom ? { color: styles.colors.primary } : { color: '#D4AF37' }} />
+              </motion.div>
+              <div className="space-y-2">
+                <h2 className={`text-3xl ${styles.font} tracking-widest uppercase`} style={styles.isCustom ? { color: styles.colors.primary } : { color: '#1A1A1A' }}>
+                  {data.custom_config?.swap_names ? `${data.bride_name} & ${data.groom_name}` : `${data.groom_name} & ${data.bride_name}`}
+                </h2>
+                <p className="text-xs uppercase tracking-[0.4em] opacity-40">Invitation</p>
+              </div>
+              <button 
+                onClick={handleOpenInvitation}
+                className="px-12 py-5 rounded-full font-bold uppercase tracking-[0.3em] shadow-2xl transition-all hover:scale-105 active:scale-95 text-white"
+                style={styles.isCustom ? { backgroundColor: styles.colors.secondary } : { backgroundColor: '#D4AF37' }}
+              >
+                Open Invitation
+              </button>
             </div>
-            <button 
-              onClick={handleOpenInvitation}
-              className="px-12 py-5 rounded-full font-bold uppercase tracking-[0.3em] shadow-2xl transition-all hover:scale-105 active:scale-95 text-white"
-              style={styles.isCustom ? { backgroundColor: styles.colors.secondary } : { backgroundColor: '#D4AF37' }}
-            >
-              Open Invitation
-            </button>
-          </div>
-        </motion.div>
-      )}
+          </motion.div>
+        )}
 
-      {(styles.showFlowers || showeringFlowers) && <FlowerFall key={flowerKey} />}
-      
-      {/* Pattern Overlay */}
-      {styles.isCustom && styles.pattern !== 'none' && (
-        <div 
-          className="absolute inset-0 pointer-events-none opacity-40 z-0" 
-          style={{ 
-            backgroundImage: `url(${getImageUrl(PATTERNS.find(p => p.id === styles.pattern)?.url)})`,
-            backgroundRepeat: 'repeat'
-          }}
-        ></div>
-      )}
+        {(styles.showFlowers || showeringFlowers) && <FlowerFall key={flowerKey} />}
+        
+        {/* Pattern Overlay */}
+        {styles.isCustom && styles.pattern !== 'none' && (
+          <div 
+            className="absolute inset-0 pointer-events-none opacity-40 z-0 animate-fade-in" 
+            style={{ 
+              backgroundImage: `url(${getImageUrl(PATTERNS.find(p => p.id === styles.pattern)?.url)})`,
+              backgroundRepeat: 'repeat'
+            }}
+          ></div>
+        )}
 
-      <div className="relative z-10">
-        {layout.map((section, index) => (
-          <div key={index}>
-            {renderSection(section)}
-          </div>
-        ))}
+        {/* Hero Background Image */}
+        {styles.isCustom && styles.heroBgImage && (
+          <div 
+            className="absolute inset-0 pointer-events-none z-0 bg-cover bg-center" 
+            style={{ 
+              backgroundImage: `url(${getImageUrl(styles.heroBgImage)})`,
+              opacity: styles.heroBgOpacity
+            }}
+          ></div>
+        )}
+
+        <div className="relative z-10 flex-grow">
+          {layout.map((section, index) => (
+            <div key={index}>
+              {renderSection(section)}
+            </div>
+          ))}
+        </div>
       </div>
 
       {/* Interactive Controls */}

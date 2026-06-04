@@ -62,6 +62,7 @@ export default function TemplateCreatorPage() {
     heroBgOpacity: 0.5,
     silhouetteSize: 120,
     silhouetteOpacity: 0.3,
+    showSilhouette: true,
     layout: [
       { id: '0', type: 'quote', visible: true, bgImage: '', bgOpacity: 0.1 },
       { id: '1', type: 'hero', visible: true, bgImage: '', bgOpacity: 0.1 },
@@ -340,30 +341,43 @@ export default function TemplateCreatorPage() {
                 <h2 className="font-bold uppercase text-xs tracking-widest text-wedding-dark">Silhouette Styling</h2>
              </div>
              <div className="space-y-6 bg-gray-50 p-4 rounded-2xl border border-gray-100">
-                <div className="space-y-2">
-                   <div className="flex justify-between items-center">
-                      <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Silhouette Size</label>
-                      <span className="text-[10px] font-bold text-wedding-gold">{config.silhouetteSize}px</span>
-                   </div>
-                   <input 
-                     type="range" min="30" max="400" step="10"
-                     className="w-full h-1.5 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-wedding-gold"
-                     value={config.silhouetteSize || 120}
-                     onChange={(e) => setConfig({...config, silhouetteSize: parseInt(e.target.value)})}
-                   />
+                <div className="flex items-center justify-between">
+                   <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Show Silhouette</span>
+                   <button 
+                     onClick={() => setConfig({...config, showSilhouette: config.showSilhouette !== false ? false : true})}
+                     className={`w-10 h-5 rounded-full relative transition-all duration-300 ${config.showSilhouette !== false ? 'bg-wedding-gold' : 'bg-gray-200'}`}
+                   >
+                     <div className={`absolute top-1 w-3 h-3 bg-white rounded-full transition-all duration-300 ${config.showSilhouette !== false ? 'left-6' : 'left-1'}`}></div>
+                   </button>
                 </div>
-                <div className="space-y-2">
-                   <div className="flex justify-between items-center">
-                      <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Silhouette Opacity</label>
-                      <span className="text-[10px] font-bold text-wedding-gold">{((config.silhouetteOpacity || 0.3) * 100).toFixed(0)}%</span>
-                   </div>
-                   <input 
-                     type="range" min="0" max="1" step="0.05"
-                     className="w-full h-1.5 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-wedding-gold"
-                     value={config.silhouetteOpacity || 0.3}
-                     onChange={(e) => setConfig({...config, silhouetteOpacity: parseFloat(e.target.value)})}
-                   />
-                </div>
+                {config.showSilhouette !== false && (
+                  <>
+                    <div className="space-y-2">
+                       <div className="flex justify-between items-center">
+                          <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Silhouette Size</label>
+                          <span className="text-[10px] font-bold text-wedding-gold">{config.silhouetteSize}px</span>
+                       </div>
+                       <input 
+                         type="range" min="30" max="400" step="10"
+                         className="w-full h-1.5 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-wedding-gold"
+                         value={config.silhouetteSize || 120}
+                         onChange={(e) => setConfig({...config, silhouetteSize: parseInt(e.target.value)})}
+                       />
+                    </div>
+                    <div className="space-y-2">
+                       <div className="flex justify-between items-center">
+                          <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Silhouette Opacity</label>
+                          <span className="text-[10px] font-bold text-wedding-gold">{((config.silhouetteOpacity || 0.3) * 100).toFixed(0)}%</span>
+                       </div>
+                       <input 
+                         type="range" min="0" max="1" step="0.05"
+                         className="w-full h-1.5 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-wedding-gold"
+                         value={config.silhouetteOpacity || 0.3}
+                         onChange={(e) => setConfig({...config, silhouetteOpacity: parseFloat(e.target.value)})}
+                       />
+                    </div>
+                  </>
+                )}
              </div>
           </section>
 
@@ -425,8 +439,8 @@ export default function TemplateCreatorPage() {
                        })()}
                     </div>
 
-                     {sections.map((s) => {
-                      const bgUrl = s.bgImage || (s.type === 'hero' && !config.heroBgImage ? DEFAULT_SILHOUETTE : '');
+                      {sections.map((s) => {
+                      const bgUrl = s.bgImage || (s.type === 'hero' && !config.heroBgImage && config.showSilhouette !== false ? DEFAULT_SILHOUETTE : '');
                       const isDefaultSilhouette = bgUrl.includes('default_silhouette');
                       
                       return (
@@ -437,12 +451,12 @@ export default function TemplateCreatorPage() {
                          {/* Section Background Preview */}
                          {bgUrl && (
                             <div 
-                              className="absolute inset-0 z-0 bg-contain bg-no-repeat bg-center pointer-events-none"
+                              className={`absolute inset-0 z-0 ${isDefaultSilhouette ? 'bg-contain' : 'bg-cover'} bg-no-repeat bg-center pointer-events-none`}
                               style={{ 
                                 backgroundImage: `url(${getImageUrl(bgUrl)})`,
                                 opacity: isDefaultSilhouette ? 0.3 : (s.bgOpacity || 0.1),
                                 mixBlendMode: isDefaultSilhouette ? 'multiply' : 'normal',
-                                backgroundSize: isDefaultSilhouette ? '50%' : 'contain'
+                                backgroundSize: isDefaultSilhouette ? '50%' : 'cover'
                               }}
                             />
                          )}
