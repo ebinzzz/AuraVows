@@ -1,11 +1,11 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import api, { getImageUrl } from '../lib/api';
-import { 
-  Heart, MapPin, Clock, 
-  Cross, Moon, Star, Flower2, 
-  Calendar, Info, Phone, 
-  ExternalLink, Send, Gift, 
+import {
+  Heart, MapPin, Clock,
+  Cross, Moon, Star, Flower2,
+  Calendar, Info, Phone,
+  ExternalLink, Send, Gift,
   ChevronRight, Camera, X,
   CalendarPlus, Video, ImageIcon, Music, Play
 } from 'lucide-react';
@@ -108,12 +108,12 @@ export default function InvitationPage() {
       // Force comparison using Indian Standard Time (IST)
       const indiaTimeStr = new Date().toLocaleString("en-US", { timeZone: "Asia/Kolkata" });
       const indiaDate = new Date(indiaTimeStr);
-      
+
       const year = indiaDate.getFullYear();
       const month = String(indiaDate.getMonth() + 1).padStart(2, '0');
       const day = String(indiaDate.getDate()).padStart(2, '0');
       const todayInIndia = `${year}-${month}-${day}`;
-      
+
       setIsWeddingDay(data.wedding_date === todayInIndia);
     }
   }, [data?.wedding_date]);
@@ -132,10 +132,10 @@ export default function InvitationPage() {
           if (modifier === 'pm') hours = (parseInt(hours, 10) + 12).toString();
           timeStr = `${hours.padStart(2, '0')}:${(minutes || '00').padStart(2, '0')}`;
         }
-        
+
         // Ensure time is in HH:mm format for ISO
         const cleanTime = timeStr.match(/\d{2}:\d{2}/) ? timeStr.match(/\d{2}:\d{2}/)![0] : '00:00';
-        
+
         const weddingDateStr = `${data.wedding_date}T${cleanTime}:00`;
         const weddingDate = new Date(weddingDateStr).getTime();
         const now = new Date().getTime();
@@ -158,8 +158,8 @@ export default function InvitationPage() {
 
   useEffect(() => {
     if (data) {
-      const musicUrl = isWeddingDay && data.wedding_day_music_url 
-        ? data.wedding_day_music_url 
+      const musicUrl = isWeddingDay && data.wedding_day_music_url
+        ? data.wedding_day_music_url
         : data.background_music_url;
 
       if (musicUrl) {
@@ -177,8 +177,8 @@ export default function InvitationPage() {
 
   const handleOpenInvitation = () => {
     setShowOverlay(false);
-    const musicUrl = isWeddingDay && data?.wedding_day_music_url 
-      ? data.wedding_day_music_url 
+    const musicUrl = isWeddingDay && data?.wedding_day_music_url
+      ? data.wedding_day_music_url
       : data?.background_music_url;
 
     if (musicUrl) {
@@ -200,8 +200,8 @@ export default function InvitationPage() {
   const addToCalendar = () => {
     if (!data) return;
     const dateStr = data.wedding_date.replace(/-/g, '');
-    const names = data.custom_config?.swap_names 
-      ? `${data.bride_name} & ${data.groom_name}` 
+    const names = data.custom_config?.swap_names
+      ? `${data.bride_name} & ${data.groom_name}`
       : `${data.groom_name} & ${data.bride_name}`;
     const url = `https://www.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent('Wedding: ' + names)}&dates=${dateStr}/${dateStr}&details=${encodeURIComponent('Join us for our wedding ceremony!')}&location=${encodeURIComponent(data.venue_name + ', ' + data.venue_address)}`;
     window.open(url, '_blank');
@@ -219,12 +219,12 @@ export default function InvitationPage() {
         const response = await api.get(`/invitations/${id}`);
         const invData = response.data;
         setData(invData);
-        
+
         // Instant redirect if passed
         const indiaTimeStr = new Date().toLocaleString("en-US", { timeZone: "Asia/Kolkata" });
         const indiaDate = new Date(indiaTimeStr);
         const todayInIndia = `${indiaDate.getFullYear()}-${String(indiaDate.getMonth() + 1).padStart(2, '0')}-${String(indiaDate.getDate()).padStart(2, '0')}`;
-        
+
         if (todayInIndia > invData.wedding_date) {
           navigate(`/invite/${id}/memories`, { replace: true });
           return;
@@ -255,49 +255,49 @@ export default function InvitationPage() {
 
   if (loading) return (
     <div className="min-h-screen flex items-center justify-center bg-wedding-lightGold">
-       <motion.div 
-         animate={{ scale: [1, 1.2, 1] }} 
-         transition={{ repeat: Infinity, duration: 2 }}
-         className="text-wedding-primary"
-       >
-          <Heart className="w-12 h-12 fill-current" />
-       </motion.div>
+      <motion.div
+        animate={{ scale: [1, 1.2, 1] }}
+        transition={{ repeat: Infinity, duration: 2 }}
+        className="text-wedding-primary"
+      >
+        <Heart className="w-12 h-12 fill-current" />
+      </motion.div>
     </div>
   );
 
   if (error === 'inactive') return (
     <div className="min-h-screen flex items-center justify-center bg-[#FFFEF5] px-6">
-       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="max-w-md w-full text-center space-y-8 p-12 rounded-3xl bg-white shadow-2xl border border-wedding-gold/20">
-          <div className="flex justify-center">
-             <div className="w-20 h-20 bg-wedding-lightGold/30 rounded-full flex items-center justify-center">
-                <Heart className="w-10 h-10 text-wedding-gold opacity-40" />
-             </div>
+      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="max-w-md w-full text-center space-y-8 p-12 rounded-3xl bg-white shadow-2xl border border-wedding-gold/20">
+        <div className="flex justify-center">
+          <div className="w-20 h-20 bg-wedding-lightGold/30 rounded-full flex items-center justify-center">
+            <Heart className="w-10 h-10 text-wedding-gold opacity-40" />
           </div>
-          <h2 className="text-3xl font-serif text-wedding-dark">Invitation Closed</h2>
-          <p className="text-wedding-gray italic leading-relaxed">
-             This invitation is currently inactive or the event has passed. 
-             Please contact the family directly for any inquiries.
-          </p>
-          <div className="w-12 h-px bg-wedding-gold/30 mx-auto"></div>
-          <p className="text-[10px] uppercase tracking-[0.3em] text-wedding-gold font-bold">Forever & Always</p>
-       </motion.div>
+        </div>
+        <h2 className="text-3xl font-serif text-wedding-dark">Invitation Closed</h2>
+        <p className="text-wedding-gray italic leading-relaxed">
+          This invitation is currently inactive or the event has passed.
+          Please contact the family directly for any inquiries.
+        </p>
+        <div className="w-12 h-px bg-wedding-gold/30 mx-auto"></div>
+        <p className="text-[10px] uppercase tracking-[0.3em] text-wedding-gold font-bold">Forever & Always</p>
+      </motion.div>
     </div>
   );
 
   if (error || !data) return (
     <div className="min-h-screen flex items-center justify-center bg-[#FFFEF5] px-6">
-       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="max-w-md w-full text-center space-y-8 p-12 rounded-3xl bg-white shadow-2xl border border-red-50">
-          <div className="flex justify-center">
-             <div className="w-20 h-20 bg-red-50 rounded-full flex items-center justify-center">
-                <Heart className="w-10 h-10 text-red-200" />
-             </div>
+      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="max-w-md w-full text-center space-y-8 p-12 rounded-3xl bg-white shadow-2xl border border-red-50">
+        <div className="flex justify-center">
+          <div className="w-20 h-20 bg-red-50 rounded-full flex items-center justify-center">
+            <Heart className="w-10 h-10 text-red-200" />
           </div>
-          <h2 className="text-3xl font-serif text-wedding-dark">Invitation Not Found</h2>
-          <p className="text-wedding-gray italic leading-relaxed">
-             We couldn't find the invitation you're looking for. 
-             Please double-check the link or contact the host.
-          </p>
-       </motion.div>
+        </div>
+        <h2 className="text-3xl font-serif text-wedding-dark">Invitation Not Found</h2>
+        <p className="text-wedding-gray italic leading-relaxed">
+          We couldn't find the invitation you're looking for.
+          Please double-check the link or contact the host.
+        </p>
+      </motion.div>
     </div>
   );
 
@@ -350,17 +350,17 @@ export default function InvitationPage() {
     const bgOpacity = section.bgOpacity ?? (type === 'hero' ? styles.heroBgOpacity : 0.1);
 
     return (
-      <section 
+      <section
         className={`relative overflow-hidden ${type === 'hero' ? 'pt-8 pb-12' : 'py-12'} flex flex-col items-center justify-center text-center px-4`}
       >
         {/* Background Layer (Custom Only) */}
         {sectionBg && !sectionBg.includes('default_silhouette') && (
-          <div 
-            className={`absolute inset-0 z-0 bg-contain bg-no-repeat bg-center`}
-            style={{ 
-              backgroundImage: `url(${sectionBg})`, 
+          <div
+            className={`absolute inset-0 z-0 bg-cover bg-no-repeat bg-center`}
+            style={{
+              backgroundImage: `url(${sectionBg})`,
               opacity: bgOpacity,
-              backgroundSize: 'contain'
+              backgroundSize: 'cover'
             }}
           />
         )}
@@ -448,11 +448,11 @@ export default function InvitationPage() {
                 {/* Default Silhouette above wording */}
                 {type === 'hero' && !styles.heroBgImage && styles.showSilhouette !== false && (
                   <div className="pt-8 flex justify-center">
-                    <motion.img 
+                    <motion.img
                       initial={{ opacity: 0, y: 10 }}
                       whileInView={{ opacity: styles.silhouetteOpacity ?? 0.35, y: 0 }}
                       src={getImageUrl(DEFAULT_SILHOUETTE)}
-                      style={{ 
+                      style={{
                         width: styles.silhouetteSize ? `${styles.silhouetteSize}px` : '200px'
                       }}
                       className="h-auto mix-blend-multiply"
@@ -475,8 +475,8 @@ export default function InvitationPage() {
           {type === 'parents' && (
             <motion.div initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} className="space-y-10">
               <div>
-                <p 
-                  className="mb-4 uppercase text-[10px] tracking-[0.3em] font-bold" 
+                <p
+                  className="mb-4 uppercase text-[10px] tracking-[0.3em] font-bold"
                   style={styles.isCustom ? { color: styles.colors.secondary } : { color: '#9CA3AF' }}
                 >
                   {data.compliments_title || "WITH THE BLESSINGS OF OUR ELDERS"}
@@ -495,29 +495,29 @@ export default function InvitationPage() {
           )}
 
           {type === 'ceremony' && (
-            <motion.div 
-              initial={{ opacity: 0, scale: 0.95 }} 
-              whileInView={{ opacity: 1, scale: 1 }} 
-              className={`p-6 md:p-10 rounded-[2rem] md:rounded-[2.5rem] shadow-2xl border backdrop-blur-md relative overflow-hidden`} 
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              className={`p-6 md:p-10 rounded-[2rem] md:rounded-[2.5rem] shadow-2xl border backdrop-blur-md relative overflow-hidden`}
               style={{
                 borderColor: styles.isCustom ? styles.colors.secondary + '33' : undefined,
-                backgroundColor: styles.isCustom 
-                  ? styles.colors.cardBg || 'rgba(255, 255, 255, 0.8)' 
+                backgroundColor: styles.isCustom
+                  ? styles.colors.cardBg || 'rgba(255, 255, 255, 0.8)'
                   : (data.template === 'modern' ? 'rgba(249, 251, 249, 0.8)' : data.template === 'floral' ? 'rgba(255, 245, 247, 0.8)' : 'rgba(255, 254, 245, 0.8)')
               }}
             >
               <div className="absolute top-0 right-0 p-6">
-                <LogoIcon 
-                  style={{ 
+                <LogoIcon
+                  style={{
                     width: styles.silhouetteSize ? `${styles.silhouetteSize}px` : '120px',
                     height: styles.silhouetteSize ? `${styles.silhouetteSize}px` : '120px',
                     opacity: styles.silhouetteOpacity ?? 0.05,
                     color: styles.isCustom ? styles.colors.secondary : undefined
-                  }} 
+                  }}
                 />
               </div>
               <h4 className="uppercase tracking-[0.3em] font-bold mb-10 text-xs text-wedding-gold" style={styles.isCustom ? { color: styles.colors.secondary } : {}}>The Ceremony</h4>
-              
+
               <div className="space-y-10 mb-12">
                 <p className={`text-2xl md:text-5xl ${styles.font} font-bold tracking-widest`} style={styles.isCustom ? { color: styles.colors.primary } : {}}>
                   {new Date(data.wedding_date).toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' })}
@@ -542,7 +542,7 @@ export default function InvitationPage() {
                 <a href={data.venue_map_url} target="_blank" rel="noopener noreferrer" className="px-8 py-4 rounded-full border-2 transition-all uppercase text-xs font-bold tracking-[0.3em]" style={styles.isCustom ? { borderColor: styles.colors.secondary, color: styles.colors.secondary } : { borderColor: '#D4AF37', color: '#D4AF37' }}>
                   View Venue Location
                 </a>
-                
+
                 <button onClick={addToCalendar} className="px-8 py-4 rounded-full border-2 transition-all uppercase text-xs font-bold tracking-[0.3em]" style={styles.isCustom ? { borderColor: styles.colors.secondary, color: styles.colors.secondary } : { borderColor: '#D4AF37', color: '#D4AF37' }}>
                   <CalendarPlus className="inline-block w-4 h-4 mr-2 mb-1" />
                   Add to Calendar
@@ -562,7 +562,7 @@ export default function InvitationPage() {
             <motion.div initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} className="space-y-10">
               <h2 className={`text-4xl md:text-6xl ${styles.font} italic`} style={styles.isCustom ? { color: styles.colors.primary } : {}}>Will you join us?</h2>
               <p className="opacity-50 text-xs tracking-widest uppercase">Kindly respond to let us know your plans</p>
-              <button 
+              <button
                 onClick={() => window.location.href += '/rsvp'}
                 className="px-10 md:px-16 py-4 md:py-6 rounded-full font-bold uppercase tracking-[0.3em] shadow-2xl transition-all hover:scale-105 active:scale-95 text-white"
                 style={styles.isCustom ? { backgroundColor: styles.colors.secondary } : { backgroundColor: '#D4AF37' }}
@@ -575,43 +575,43 @@ export default function InvitationPage() {
           {/* New Sections */}
           {type === 'countdown' && data.wedding_date && (
             <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} className="py-16 px-4">
-               {timeLeft.days === 0 && timeLeft.hours === 0 && timeLeft.minutes === 0 && timeLeft.seconds === 0 ? (
-                 <div className="text-center space-y-4">
-                    <motion.div 
-                      initial={{ scale: 0.9, opacity: 0 }} 
-                      animate={{ scale: 1, opacity: 1 }}
-                      className="text-4xl md:text-6xl font-serif italic"
-                      style={styles.isCustom ? { color: styles.colors.primary } : {}}
-                    >
-                      The Big Day is Here!
-                    </motion.div>
-                    <p className="text-[10px] uppercase tracking-[0.4em] opacity-50">Congratulations to the Happy Couple</p>
-                 </div>
-               ) : (
-                 <div className="grid grid-cols-4 gap-2 md:gap-8 max-w-3xl mx-auto">
-                    {[
-                      { label: 'Days', value: timeLeft.days },
-                      { label: 'Hours', value: timeLeft.hours },
-                      { label: 'Minutes', value: timeLeft.minutes },
-                      { label: 'Seconds', value: timeLeft.seconds },
-                    ].map((item, i) => (
-                      <div key={i} className="flex flex-col items-center relative">
-                         <div className="relative group">
-                           <div className="text-3xl sm:text-4xl md:text-7xl font-serif font-bold mb-3 tracking-tighter" style={styles.isCustom ? { color: styles.colors.primary } : {}}>
-                             {String(item.value).padStart(2, '0')}
-                           </div>
-                           <motion.div 
-                             className="absolute -bottom-1 left-0 right-0 h-px opacity-20" 
-                             style={styles.isCustom ? { backgroundColor: styles.colors.secondary } : { backgroundColor: '#D4AF37' }}
-                             initial={{ width: 0 }}
-                             whileInView={{ width: '100%' }}
-                           />
-                         </div>
-                         <div className="text-[8px] md:text-[10px] uppercase tracking-[0.4em] opacity-40 font-bold mt-2">{item.label}</div>
+              {timeLeft.days === 0 && timeLeft.hours === 0 && timeLeft.minutes === 0 && timeLeft.seconds === 0 ? (
+                <div className="text-center space-y-4">
+                  <motion.div
+                    initial={{ scale: 0.9, opacity: 0 }}
+                    animate={{ scale: 1, opacity: 1 }}
+                    className="text-4xl md:text-6xl font-serif italic"
+                    style={styles.isCustom ? { color: styles.colors.primary } : {}}
+                  >
+                    The Big Day is Here!
+                  </motion.div>
+                  <p className="text-[10px] uppercase tracking-[0.4em] opacity-50">Congratulations to the Happy Couple</p>
+                </div>
+              ) : (
+                <div className="grid grid-cols-4 gap-2 md:gap-8 max-w-3xl mx-auto">
+                  {[
+                    { label: 'Days', value: timeLeft.days },
+                    { label: 'Hours', value: timeLeft.hours },
+                    { label: 'Minutes', value: timeLeft.minutes },
+                    { label: 'Seconds', value: timeLeft.seconds },
+                  ].map((item, i) => (
+                    <div key={i} className="flex flex-col items-center relative">
+                      <div className="relative group">
+                        <div className="text-3xl sm:text-4xl md:text-7xl font-serif font-bold mb-3 tracking-tighter" style={styles.isCustom ? { color: styles.colors.primary } : {}}>
+                          {String(item.value).padStart(2, '0')}
+                        </div>
+                        <motion.div
+                          className="absolute -bottom-1 left-0 right-0 h-px opacity-20"
+                          style={styles.isCustom ? { backgroundColor: styles.colors.secondary } : { backgroundColor: '#D4AF37' }}
+                          initial={{ width: 0 }}
+                          whileInView={{ width: '100%' }}
+                        />
                       </div>
-                    ))}
-                 </div>
-               )}
+                      <div className="text-[8px] md:text-[10px] uppercase tracking-[0.4em] opacity-40 font-bold mt-2">{item.label}</div>
+                    </div>
+                  ))}
+                </div>
+              )}
             </motion.div>
           )}
 
@@ -624,16 +624,16 @@ export default function InvitationPage() {
               </div>
               <div className="columns-2 md:columns-3 gap-6 space-y-6">
                 {data.gallery_photos.map((url, i) => (
-                  <motion.div 
-                    key={i} 
-                    initial={{ opacity: 0, y: 20 }} 
+                  <motion.div
+                    key={i}
+                    initial={{ opacity: 0, y: 20 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     transition={{ delay: i * 0.1 }}
                     className="break-inside-avoid rounded-3xl overflow-hidden shadow-xl border border-white/20 relative group"
                   >
                     <img src={getImageUrl(url)} alt={`Gallery ${i}`} className="w-full h-auto transition-transform duration-700 group-hover:scale-110" />
                     <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                       <ImageIcon className="text-white w-8 h-8" />
+                      <ImageIcon className="text-white w-8 h-8" />
                     </div>
                   </motion.div>
                 ))}
@@ -648,59 +648,59 @@ export default function InvitationPage() {
                 <h2 className={`text-3xl md:text-4xl ${styles.font} italic opacity-80`}>The Celebration</h2>
                 <div className="h-px w-8 md:w-12 bg-current opacity-20" />
               </div>
-              
+
               <div className="relative">
                 {/* Central Vertical Line */}
-                <div 
-                  className="absolute left-1/2 top-0 bottom-0 w-px -translate-x-1/2 opacity-20" 
+                <div
+                  className="absolute left-1/2 top-0 bottom-0 w-px -translate-x-1/2 opacity-20"
                   style={styles.isCustom ? { backgroundColor: styles.colors.secondary } : { backgroundColor: '#D4AF37' }}
                 />
 
                 <div className="space-y-12 md:space-y-0">
                   {data.event_timeline.map((event, i) => (
-                    <motion.div 
-                      key={i} 
-                      initial={{ opacity: 0, y: 20 }} 
+                    <motion.div
+                      key={i}
+                      initial={{ opacity: 0, y: 20 }}
                       whileInView={{ opacity: 1, y: 0 }}
                       transition={{ duration: 0.8, delay: i * 0.1 }}
                       className={`flex flex-col md:flex-row items-center justify-center gap-6 md:gap-0 relative ${i % 2 === 0 ? '' : 'md:flex-row-reverse'}`}
                     >
                       {/* Timeline Dot (Mobile: visible between events) */}
                       <div className="md:hidden relative z-10 flex items-center justify-center w-12 h-4">
-                        <div 
-                          className="w-3 h-3 rounded-full border shadow-sm" 
-                          style={styles.isCustom ? { 
-                            borderColor: styles.colors.secondary, 
-                            backgroundColor: styles.colors.bg 
-                          } : { 
-                            borderColor: '#D4AF37', 
-                            backgroundColor: '#FFFEF5' 
-                          }} 
+                        <div
+                          className="w-3 h-3 rounded-full border shadow-sm"
+                          style={styles.isCustom ? {
+                            borderColor: styles.colors.secondary,
+                            backgroundColor: styles.colors.bg
+                          } : {
+                            borderColor: '#D4AF37',
+                            backgroundColor: '#FFFEF5'
+                          }}
                         />
                       </div>
 
                       {/* Event Content */}
                       <div className={`w-full md:w-1/2 px-4 md:px-12 text-center ${i % 2 === 0 ? 'md:text-right' : 'md:text-left'}`}>
                         <div className="inline-block space-y-3">
-                           <h3 className="text-xl md:text-3xl font-bold tracking-[0.2em] uppercase leading-tight" style={styles.isCustom ? { color: styles.colors.primary } : {}}>{event.name.toUpperCase() === 'LUCHION' ? 'LUNCHEON' : event.name}</h3>
-                           <div className="space-y-1">
-                             <p className="text-sm md:text-base italic opacity-60 font-serif" style={styles.isCustom ? { color: styles.colors.text } : {}}>{event.time}</p>
-                             <p className="text-[10px] md:text-sm font-bold tracking-[0.2em] uppercase opacity-40">{event.venue}</p>
-                           </div>
+                          <h3 className="text-xl md:text-3xl font-bold tracking-[0.2em] uppercase leading-tight" style={styles.isCustom ? { color: styles.colors.primary } : {}}>{event.name.toUpperCase() === 'LUCHION' ? 'LUNCHEON' : event.name}</h3>
+                          <div className="space-y-1">
+                            <p className="text-sm md:text-base italic opacity-60 font-serif" style={styles.isCustom ? { color: styles.colors.text } : {}}>{event.time}</p>
+                            <p className="text-[10px] md:text-sm font-bold tracking-[0.2em] uppercase opacity-40">{event.venue}</p>
+                          </div>
                         </div>
                       </div>
 
                       {/* Timeline Dot (Desktop only) */}
                       <div className="hidden md:flex relative z-10 items-center justify-center w-12">
-                        <div 
-                          className="w-4 h-4 rounded-full border-2 shadow-[0_0_15px_rgba(0,0,0,0.05)]" 
-                          style={styles.isCustom ? { 
-                            borderColor: styles.colors.secondary, 
-                            backgroundColor: styles.colors.bg 
-                          } : { 
-                            borderColor: '#D4AF37', 
-                            backgroundColor: '#FFFEF5' 
-                          }} 
+                        <div
+                          className="w-4 h-4 rounded-full border-2 shadow-[0_0_15px_rgba(0,0,0,0.05)]"
+                          style={styles.isCustom ? {
+                            borderColor: styles.colors.secondary,
+                            backgroundColor: styles.colors.bg
+                          } : {
+                            borderColor: '#D4AF37',
+                            backgroundColor: '#FFFEF5'
+                          }}
                         />
                       </div>
 
@@ -717,10 +717,10 @@ export default function InvitationPage() {
     );
   };
 
-  const defaultLayout = isWeddingDay 
+  const defaultLayout = isWeddingDay
     ? ['hero', 'ceremony', 'timeline', 'gallery'] // Simplified for Wedding Day
     : ['hero', 'countdown', 'ceremony', 'timeline', 'parents', 'gallery', 'rsvp'];
-    
+
   let layout: any[] = styles.isCustom ? styles.layout.filter((s: any) => s.visible) : defaultLayout;
 
   // Filter out RSVP on wedding day even if in custom layout
@@ -740,90 +740,88 @@ export default function InvitationPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#e8e6f4] flex flex-col items-center justify-start sm:py-8 selection:bg-wedding-gold selection:text-white">
-      <div 
-        className="w-full sm:max-w-[450px] min-h-screen sm:min-h-0 sm:shadow-2xl sm:rounded-[2.5rem] relative overflow-hidden flex flex-col"
-        style={styles.isCustom ? { backgroundColor: styles.colors.bg, color: styles.colors.text } : {}}
-      >
-        {/* Welcome Overlay (Ensures Music Plays on Mobile) */}
-        {showOverlay && (
-          <motion.div 
-            initial={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[200] flex items-center justify-center bg-white"
-            style={styles.isCustom ? { backgroundColor: styles.colors.bg } : {}}
-          >
-            <div className="text-center space-y-8 p-12">
-              <motion.div
-                animate={{ scale: [1, 1.1, 1] }}
-                transition={{ repeat: Infinity, duration: 2 }}
-                className="flex justify-center"
-              >
-                <LogoIcon className="w-16 h-16" style={styles.isCustom ? { color: styles.colors.primary } : { color: '#D4AF37' }} />
-              </motion.div>
-              <div className="space-y-2">
-                <h2 className={`text-3xl ${styles.font} tracking-widest uppercase`} style={styles.isCustom ? { color: styles.colors.primary } : { color: '#1A1A1A' }}>
-                  {data.custom_config?.swap_names ? `${data.bride_name} & ${data.groom_name}` : `${data.groom_name} & ${data.bride_name}`}
-                </h2>
-                <p className="text-xs uppercase tracking-[0.4em] opacity-40">Invitation</p>
-              </div>
-              <button 
-                onClick={handleOpenInvitation}
-                className="px-12 py-5 rounded-full font-bold uppercase tracking-[0.3em] shadow-2xl transition-all hover:scale-105 active:scale-95 text-white"
-                style={styles.isCustom ? { backgroundColor: styles.colors.secondary } : { backgroundColor: '#D4AF37' }}
-              >
-                Open Invitation
-              </button>
+    <div 
+      className="min-h-screen relative selection:bg-wedding-gold selection:text-white flex flex-col"
+      style={styles.isCustom ? { backgroundColor: styles.colors.bg, color: styles.colors.text } : {}}
+    >
+      {/* Welcome Overlay (Ensures Music Plays on Mobile) */}
+      {showOverlay && (
+        <motion.div 
+          initial={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          className="fixed inset-0 z-[200] flex items-center justify-center bg-white"
+          style={styles.isCustom ? { backgroundColor: styles.colors.bg } : {}}
+        >
+          <div className="text-center space-y-8 p-12">
+            <motion.div
+              animate={{ scale: [1, 1.1, 1] }}
+              transition={{ repeat: Infinity, duration: 2 }}
+              className="flex justify-center"
+            >
+              <LogoIcon className="w-16 h-16" style={styles.isCustom ? { color: styles.colors.primary } : { color: '#D4AF37' }} />
+            </motion.div>
+            <div className="space-y-2">
+              <h2 className={`text-3xl ${styles.font} tracking-widest uppercase`} style={styles.isCustom ? { color: styles.colors.primary } : { color: '#1A1A1A' }}>
+                {data.custom_config?.swap_names ? `${data.bride_name} & ${data.groom_name}` : `${data.groom_name} & ${data.bride_name}`}
+              </h2>
+              <p className="text-xs uppercase tracking-[0.4em] opacity-40">Invitation</p>
             </div>
-          </motion.div>
-        )}
+            <button 
+              onClick={handleOpenInvitation}
+              className="px-12 py-5 rounded-full font-bold uppercase tracking-[0.3em] shadow-2xl transition-all hover:scale-105 active:scale-95 text-white"
+              style={styles.isCustom ? { backgroundColor: styles.colors.secondary } : { backgroundColor: '#D4AF37' }}
+            >
+              Open Invitation
+            </button>
+          </div>
+        </motion.div>
+      )}
 
-        {(styles.showFlowers || showeringFlowers) && <FlowerFall key={flowerKey} />}
-        
-        {/* Pattern Overlay */}
-        {styles.isCustom && styles.pattern !== 'none' && (
-          <div 
-            className="absolute inset-0 pointer-events-none opacity-40 z-0 animate-fade-in" 
-            style={{ 
-              backgroundImage: `url(${getImageUrl(PATTERNS.find(p => p.id === styles.pattern)?.url)})`,
-              backgroundRepeat: 'repeat'
-            }}
-          ></div>
-        )}
+      {(styles.showFlowers || showeringFlowers) && <FlowerFall key={flowerKey} />}
+      
+      {/* Pattern Overlay */}
+      {styles.isCustom && styles.pattern !== 'none' && (
+        <div 
+          className="absolute inset-0 pointer-events-none opacity-40 z-0 animate-fade-in" 
+          style={{ 
+            backgroundImage: `url(${getImageUrl(PATTERNS.find(p => p.id === styles.pattern)?.url)})`,
+            backgroundRepeat: 'repeat'
+          }}
+        ></div>
+      )}
 
-        {/* Hero Background Image */}
-        {styles.isCustom && styles.heroBgImage && (
-          <div 
-            className="absolute inset-0 pointer-events-none z-0 bg-cover bg-center" 
-            style={{ 
-              backgroundImage: `url(${getImageUrl(styles.heroBgImage)})`,
-              opacity: styles.heroBgOpacity
-            }}
-          ></div>
-        )}
+      {/* Hero Background Image */}
+      {styles.isCustom && styles.heroBgImage && (
+        <div 
+          className="absolute inset-0 pointer-events-none z-0 bg-cover bg-center" 
+          style={{ 
+            backgroundImage: `url(${getImageUrl(styles.heroBgImage)})`,
+            opacity: styles.heroBgOpacity
+          }}
+        ></div>
+      )}
 
-        <div className="relative z-10 flex-grow">
-          {layout.map((section, index) => (
-            <div key={index}>
-              {renderSection(section)}
-            </div>
-          ))}
-        </div>
-
-        {/* Footer */}
-        <footer className="py-24 text-center opacity-40 relative z-10">
-           <a href="/" className="inline-block hover:opacity-80 transition-opacity mb-4">
-             <div className="flex items-center justify-center gap-3">
-                <LogoIcon className="w-6 h-6 fill-current" />
-                <span className="uppercase text-[10px] tracking-[0.5em] font-bold">AuraVows Premium</span>
-             </div>
-           </a>
-           <p className="text-xs uppercase tracking-widest mb-2">© 2026 {data.custom_config?.swap_names ? `${data.bride_name} & ${data.groom_name}` : `${data.groom_name} & ${data.bride_name}`}'s Wedding</p>
-           <p className="text-[9px] uppercase tracking-[0.2em] font-bold opacity-50">
-             Powered by <a href="/" className="hover:underline font-bold">AuraVows</a>
-           </p>
-        </footer>
+      <div className="relative z-10 flex-grow">
+        {layout.map((section, index) => (
+          <div key={index}>
+            {renderSection(section)}
+          </div>
+        ))}
       </div>
+
+      {/* Footer */}
+      <footer className="py-24 text-center opacity-40 relative z-10">
+         <a href="/" className="inline-block hover:opacity-80 transition-opacity mb-4">
+           <div className="flex items-center justify-center gap-3">
+              <LogoIcon className="w-6 h-6 fill-current" />
+              <span className="uppercase text-[10px] tracking-[0.5em] font-bold">AuraVows Premium</span>
+           </div>
+         </a>
+         <p className="text-xs uppercase tracking-widest mb-2">© 2026 {data.custom_config?.swap_names ? `${data.bride_name} & ${data.groom_name}` : `${data.groom_name} & ${data.bride_name}`}'s Wedding</p>
+         <p className="text-[9px] uppercase tracking-[0.2em] font-bold opacity-50">
+           Powered by <a href="/" className="hover:underline font-bold">AuraVows</a>
+         </p>
+      </footer>
 
       {/* Interactive Controls */}
       <div className="fixed bottom-8 right-8 flex flex-col gap-4 z-[100]">
