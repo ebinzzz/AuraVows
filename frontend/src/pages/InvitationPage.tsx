@@ -54,7 +54,7 @@ interface InvitationData {
 interface CustomTemplate {
   name: string;
   config: {
-    colors: { bg: string; primary: string; secondary: string; text: string };
+    colors: { bg: string; cardBg?: string; primary: string; secondary: string; text: string };
     font: string;
     logo: string;
     pattern?: string;
@@ -474,7 +474,10 @@ export default function InvitationPage() {
           {type === 'parents' && (
             <motion.div initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} className="space-y-10">
               <div>
-                <p className="text-gray-400 mb-4 uppercase text-[10px] tracking-[0.3em] font-bold">
+                <p 
+                  className="mb-4 uppercase text-[10px] tracking-[0.3em] font-bold" 
+                  style={styles.isCustom ? { color: styles.colors.secondary } : { color: '#9CA3AF' }}
+                >
                   {data.compliments_title || "WITH THE BLESSINGS OF OUR ELDERS"}
                 </p>
                 <p className={`${styles.font} leading-relaxed whitespace-pre-line`} style={{ ...(styles.isCustom ? { color: styles.colors.primary } : {}), fontSize: 'inherit' }}>
@@ -491,7 +494,17 @@ export default function InvitationPage() {
           )}
 
           {type === 'ceremony' && (
-            <motion.div initial={{ opacity: 0, scale: 0.95 }} whileInView={{ opacity: 1, scale: 1 }} className={`p-6 md:p-10 rounded-[2rem] md:rounded-[2.5rem] shadow-2xl border bg-white/80 backdrop-blur-md relative overflow-hidden`} style={styles.isCustom ? { borderColor: styles.colors.secondary + '33' } : {}}>
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.95 }} 
+              whileInView={{ opacity: 1, scale: 1 }} 
+              className={`p-6 md:p-10 rounded-[2rem] md:rounded-[2.5rem] shadow-2xl border backdrop-blur-md relative overflow-hidden`} 
+              style={{
+                borderColor: styles.isCustom ? styles.colors.secondary + '33' : undefined,
+                backgroundColor: styles.isCustom 
+                  ? styles.colors.cardBg || 'rgba(255, 255, 255, 0.8)' 
+                  : (data.template === 'modern' ? 'rgba(249, 251, 249, 0.8)' : data.template === 'floral' ? 'rgba(255, 245, 247, 0.8)' : 'rgba(255, 254, 245, 0.8)')
+              }}
+            >
               <div className="absolute top-0 right-0 p-6">
                 <LogoIcon 
                   style={{ 
@@ -510,7 +523,7 @@ export default function InvitationPage() {
                 </p>
                 <div className="flex items-center justify-center gap-4 text-2xl">
                   <Clock className="w-6 h-6 text-wedding-gold" style={styles.isCustom ? { color: styles.colors.secondary } : {}} />
-                  <span className="font-medium">{data.wedding_time}</span>
+                  <span className="font-medium" style={styles.isCustom ? { color: styles.colors.text } : {}}>{data.wedding_time}</span>
                 </div>
               </div>
 
@@ -520,7 +533,7 @@ export default function InvitationPage() {
               <div className="space-y-4 text-base md:text-lg max-w-md mx-auto mb-10">
                 <div className="flex items-start justify-center gap-4">
                   <MapPin className="w-5 h-5 md:w-6 md:h-6 mt-1 text-wedding-gold flex-shrink-0" style={styles.isCustom ? { color: styles.colors.secondary } : {}} />
-                  <span className="leading-relaxed">{data.venue_address}</span>
+                  <span className="leading-relaxed" style={styles.isCustom ? { color: styles.colors.text } : {}}>{data.venue_address}</span>
                 </div>
               </div>
 

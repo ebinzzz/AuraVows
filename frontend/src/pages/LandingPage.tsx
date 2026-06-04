@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Heart, Mail, Phone, MapPin, Sparkles, Calendar, 
@@ -11,7 +10,6 @@ import FlowerFall from '../components/FlowerFall';
 import api from '../lib/api';
 
 export default function LandingPage() {
-  const navigate = useNavigate();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [activeTab, setActiveTab] = useState<'invite' | 'rsvp' | 'memories'>('invite');
   const [showFlowers, setShowFlowers] = useState(false);
@@ -116,14 +114,14 @@ export default function LandingPage() {
       {showFlowers && <FlowerFall />}
 
       {/* Floating flower/rose petals preview button */}
-      <div className="fixed bottom-6 left-6 z-50">
+      <div className="fixed bottom-4 left-4 sm:bottom-6 sm:left-6 z-50">
         <motion.button 
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
           onClick={handleTestFlowers}
-          className="bg-white border-2 border-wedding-secondary text-wedding-primary py-3 px-5 rounded-full shadow-2xl flex items-center gap-2 text-xs font-bold uppercase tracking-wider hover:bg-wedding-accent transition-all duration-300"
+          className="bg-white border-2 border-wedding-secondary text-wedding-primary py-2 sm:py-3 px-4 sm:px-5 rounded-full shadow-2xl flex items-center gap-1.5 sm:gap-2 text-[10px] sm:text-xs font-bold uppercase tracking-wider hover:bg-wedding-accent transition-all duration-300"
         >
-          <Sparkles className="w-4 h-4 text-wedding-secondary animate-pulse" />
+          <Sparkles className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-wedding-secondary animate-pulse" />
           Shower Love 🌸
         </motion.button>
       </div>
@@ -173,7 +171,7 @@ export default function LandingPage() {
               animate={{ x: 0 }}
               exit={{ x: '100%' }}
               transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-              className="absolute right-0 top-0 bottom-0 w-80 bg-white p-8 flex flex-col justify-start gap-8"
+              className="absolute right-0 top-0 bottom-0 w-72 bg-white p-6 flex flex-col justify-start gap-8"
               onClick={(e) => e.stopPropagation()}
             >
               <div className="flex items-center justify-between border-b border-gray-100 pb-6">
@@ -199,13 +197,13 @@ export default function LandingPage() {
       </AnimatePresence>
 
       {/* Hero Section */}
-      <section className="relative pt-12 pb-24 md:py-32 px-6 overflow-hidden">
+      <section className="relative pt-6 pb-16 md:py-32 px-4 sm:px-6 overflow-hidden">
         {/* Soft luxurious background radial gradient */}
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] md:w-[1000px] h-[600px] md:h-[1000px] rounded-full bg-gradient-to-tr from-wedding-accent/40 via-wedding-lightGold/30 to-transparent blur-3xl pointer-events-none -z-10" />
 
-        <div className="max-w-7xl mx-auto grid md:grid-cols-12 gap-12 md:gap-8 items-center">
+        <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-8 items-center">
           {/* Hero Left Content */}
-          <div className="md:col-span-7 space-y-8 text-center md:text-left">
+          <div className="md:col-span-7 space-y-6 md:space-y-8 text-center md:text-left">
             <motion.div 
               initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
@@ -272,19 +270,19 @@ export default function LandingPage() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ duration: 1, delay: 0.6 }}
-              className="pt-8 grid grid-cols-3 gap-4 border-t border-wedding-gold/10"
+              className="pt-8 grid grid-cols-3 gap-2 sm:gap-4 border-t border-wedding-gold/10"
             >
               <div>
-                <p className="text-2xl md:text-3xl font-serif font-bold text-wedding-primary">100%</p>
-                <p className="text-[10px] uppercase tracking-wider text-wedding-gray">Eco Friendly</p>
+                <p className="text-xl sm:text-2xl md:text-3xl font-serif font-bold text-wedding-primary">100%</p>
+                <p className="text-[8px] sm:text-[10px] uppercase tracking-wider text-wedding-gray">Eco Friendly</p>
               </div>
               <div>
-                <p className="text-2xl md:text-3xl font-serif font-bold text-wedding-primary">80%</p>
-                <p className="text-[10px] uppercase tracking-wider text-wedding-gray">More Cost Effective</p>
+                <p className="text-xl sm:text-2xl md:text-3xl font-serif font-bold text-wedding-primary">80%</p>
+                <p className="text-[8px] sm:text-[10px] uppercase tracking-wider text-wedding-gray">More Cost Effective</p>
               </div>
               <div>
-                <p className="text-2xl md:text-3xl font-serif font-bold text-wedding-primary">Instant</p>
-                <p className="text-[10px] uppercase tracking-wider text-wedding-gray">RSVP Updates</p>
+                <p className="text-xl sm:text-2xl md:text-3xl font-serif font-bold text-wedding-primary">Instant</p>
+                <p className="text-[8px] sm:text-[10px] uppercase tracking-wider text-wedding-gray">RSVP Updates</p>
               </div>
             </motion.div>
           </div>
@@ -297,7 +295,7 @@ export default function LandingPage() {
             className="md:col-span-5 relative flex justify-center"
           >
             <div className="absolute inset-0 bg-wedding-secondary/10 rounded-full filter blur-3xl w-72 h-72 mx-auto mt-20 pointer-events-none -z-10 animate-pulse" />
-            <div className="relative border-4 border-white/60 bg-white/20 backdrop-blur-md rounded-3xl p-3 shadow-2xl max-w-[340px] md:max-w-md">
+            <div className="relative border-4 border-white/60 bg-white/20 backdrop-blur-md rounded-3xl p-3 shadow-2xl w-full max-w-[280px] xs:max-w-[340px] md:max-w-md">
               <img 
                 src="/auravows_hero.png" 
                 alt="AuraVows Premium Wedding Card Mockup" 
@@ -309,7 +307,7 @@ export default function LandingPage() {
       </section>
 
       {/* Unique Features Grid */}
-      <section id="features" className="py-24 px-6 bg-white relative">
+      <section id="features" className="py-16 sm:py-24 px-4 sm:px-6 bg-white relative">
         <div className="max-w-7xl mx-auto space-y-16">
           <div className="text-center space-y-4 max-w-2xl mx-auto">
             <h2 className="text-xs uppercase tracking-[0.3em] text-wedding-gold font-bold">Unmatched Offerings</h2>
@@ -317,7 +315,7 @@ export default function LandingPage() {
             <p className="text-wedding-gray text-sm md:text-base">A digital invitation is just the beginning. AuraVows delivers a full guest management ecosystem designed to eliminate stress and dazzle your invitees.</p>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
             {/* Feature 1 */}
             <div className="p-8 rounded-2xl bg-wedding-bg border border-wedding-gold/10 hover:border-wedding-gold/40 transition-all duration-300 hover:shadow-xl group space-y-4">
               <div className="w-12 h-12 bg-[#FFF9EB] text-wedding-secondary rounded-xl flex items-center justify-center border border-wedding-gold/25 group-hover:scale-110 transition-transform">
@@ -376,7 +374,7 @@ export default function LandingPage() {
       </section>
 
       {/* Templates Presentation Section */}
-      <section id="templates" className="py-24 px-6 bg-wedding-lightGold/40 border-y border-wedding-gold/10">
+      <section id="templates" className="py-16 sm:py-24 px-4 sm:px-6 bg-wedding-lightGold/40 border-y border-wedding-gold/10">
         <div className="max-w-7xl mx-auto space-y-16">
           <div className="text-center space-y-4 max-w-2xl mx-auto">
             <h2 className="text-xs uppercase tracking-[0.3em] text-wedding-gold font-bold">Luxury Frameworks</h2>
@@ -384,9 +382,9 @@ export default function LandingPage() {
             <p className="text-wedding-gray text-sm">Browse our design presets. Let us know which motif you love, and our team will custom craft it with your colors, silhouettes, typography, and sections.</p>
           </div>
 
-          <div className="grid md:grid-cols-12 gap-8 items-center">
+          <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-center">
             {/* Left selector */}
-            <div className="md:col-span-5 space-y-4">
+            <div className="md:col-span-5 space-y-4 w-full">
               {templates.map((tpl) => (
                 <div 
                   key={tpl.id}
@@ -414,12 +412,12 @@ export default function LandingPage() {
             </div>
 
             {/* Right mockup window rendering selected template layout */}
-            <div className="md:col-span-7 flex justify-center">
-              <div className="w-full max-w-lg bg-white rounded-3xl p-6 shadow-2xl border border-wedding-gold/15 relative overflow-hidden">
+            <div className="md:col-span-7 flex justify-center w-full">
+              <div className="w-full max-w-lg bg-white rounded-3xl p-4 sm:p-6 shadow-2xl border border-wedding-gold/15 relative overflow-hidden">
                 <div className="absolute top-0 left-0 right-0 h-1.5 bg-wedding-gold/30" />
                 
                 {/* Simulated invitation frame inside mockup */}
-                <div className={`rounded-2xl p-8 text-center transition-all duration-500 min-h-[350px] flex flex-col justify-between relative ${templates.find(t => t.id === selectedTemplate)?.previewBg} border border-wedding-gold/10`}>
+                <div className={`rounded-2xl p-4 sm:p-8 text-center transition-all duration-500 min-h-[300px] sm:min-h-[350px] flex flex-col justify-between relative ${templates.find(t => t.id === selectedTemplate)?.previewBg} border border-wedding-gold/10`}>
                   {/* Decorative corner borders representing high quality */}
                   <div className="absolute top-4 left-4 w-6 h-6 border-t-2 border-l-2 border-wedding-gold/30 rounded-tl-md" />
                   <div className="absolute top-4 right-4 w-6 h-6 border-t-2 border-r-2 border-wedding-gold/30 rounded-tr-md" />
@@ -433,7 +431,7 @@ export default function LandingPage() {
                     <span className="text-[9px] uppercase tracking-[0.3em] font-semibold text-wedding-gray">Together With Families</span>
                     
                     <div className="space-y-2">
-                      <h4 className={`text-3xl md:text-4xl ${templates.find(t => t.id === selectedTemplate)?.textStyle}`}>
+                      <h4 className={`text-2xl sm:text-4xl ${templates.find(t => t.id === selectedTemplate)?.textStyle}`}>
                         {selectedTemplate === 'royal' ? 'Julian & Eleanor' : selectedTemplate === 'sage' ? 'Noah & Isabella' : 'Ethan & Clara'}
                       </h4>
                       <p className="text-xs uppercase tracking-widest text-wedding-gray">Invite you to celebrate their wedding</p>
@@ -462,7 +460,7 @@ export default function LandingPage() {
       </section>
 
       {/* Interactive Guest Experience Walkthrough (The Wow Factor) */}
-      <section id="experience" className="py-24 px-6 bg-white">
+      <section id="experience" className="py-16 sm:py-24 px-4 sm:px-6 bg-white">
         <div className="max-w-7xl mx-auto space-y-16">
           <div className="text-center space-y-4 max-w-2xl mx-auto">
             <h2 className="text-xs uppercase tracking-[0.3em] text-wedding-gold font-bold">Interactive Experience</h2>
@@ -470,7 +468,7 @@ export default function LandingPage() {
             <p className="text-wedding-gray text-sm md:text-base">Click tabs below on the mock iPhone to preview exactly how guests interact with invitations, submit RSVPs, and upload wedding memories.</p>
           </div>
 
-          <div className="grid lg:grid-cols-12 gap-12 items-center">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
             
             {/* Feature Description Left */}
             <div className="lg:col-span-5 space-y-8">
@@ -516,23 +514,23 @@ export default function LandingPage() {
             </div>
 
             {/* Mobile Phone Mockup Right */}
-            <div className="lg:col-span-7 flex justify-center">
-              <div className="relative w-full max-w-[360px] h-[720px] bg-wedding-dark rounded-[50px] p-4 shadow-2xl border-4 border-wedding-dark">
+            <div className="lg:col-span-7 flex justify-center w-full">
+              <div className="relative w-full max-w-[320px] sm:max-w-[360px] h-[640px] sm:h-[720px] bg-wedding-dark rounded-[40px] sm:rounded-[50px] p-3 sm:p-4 shadow-2xl border-4 border-wedding-dark">
                 {/* Phone Speaker & Camera Notch */}
-                <div className="absolute top-6 left-1/2 -translate-x-1/2 w-32 h-6 bg-black rounded-full z-30 flex items-center justify-between px-4">
-                  <div className="w-3 h-3 rounded-full bg-neutral-900 border border-neutral-800" />
-                  <div className="w-12 h-1 bg-neutral-800 rounded-full" />
-                  <div className="w-2 h-2 rounded-full bg-blue-900" />
+                <div className="absolute top-6 left-1/2 -translate-x-1/2 w-28 sm:w-32 h-5 sm:h-6 bg-black rounded-full z-30 flex items-center justify-between px-4">
+                  <div className="w-2 sm:w-3 h-2 sm:h-3 rounded-full bg-neutral-900 border border-neutral-800" />
+                  <div className="w-10 sm:w-12 h-1 bg-neutral-800 rounded-full" />
+                  <div className="w-1.5 sm:w-2 h-1.5 sm:h-2 rounded-full bg-blue-900" />
                 </div>
 
                 {/* Main Screen Container */}
-                <div className="relative w-full h-full bg-[#FAFAFA] rounded-[36px] overflow-hidden flex flex-col justify-between border border-neutral-800 z-20">
+                <div className="relative w-full h-full bg-[#FAFAFA] rounded-[30px] sm:rounded-[36px] overflow-hidden flex flex-col justify-between border border-neutral-800 z-20">
                   
                   {/* Mock App Header */}
-                  <div className="bg-[#4A0E0E] text-white pt-10 pb-4 px-6 text-center shadow-md">
-                    <Heart className="w-5 h-5 text-wedding-secondary fill-wedding-secondary mx-auto mb-1 animate-pulse" />
-                    <h4 className="font-serif text-sm font-bold tracking-widest text-[#FFF9EB]">EBIN & AURA</h4>
-                    <p className="text-[8px] uppercase tracking-widest text-wedding-secondary font-semibold">Forever Together</p>
+                  <div className="bg-[#4A0E0E] text-white pt-8 sm:pt-10 pb-3 sm:pb-4 px-4 sm:px-6 text-center shadow-md">
+                    <Heart className="w-4 sm:w-5 h-4 sm:h-5 text-wedding-secondary fill-wedding-secondary mx-auto mb-1 animate-pulse" />
+                    <h4 className="font-serif text-xs sm:text-sm font-bold tracking-widest text-[#FFF9EB]">EBIN & AURA</h4>
+                    <p className="text-[7px] sm:text-[8px] uppercase tracking-widest text-wedding-secondary font-semibold">Forever Together</p>
                   </div>
 
                   {/* Mock Screen Content (Tabs) */}
@@ -740,7 +738,7 @@ export default function LandingPage() {
       </section>
 
       {/* How it Works / Design Journey */}
-      <section className="py-24 px-6 bg-wedding-lightGold/20 border-t border-wedding-gold/10">
+      <section className="py-16 sm:py-24 px-4 sm:px-6 bg-wedding-lightGold/20 border-t border-wedding-gold/10">
         <div className="max-w-7xl mx-auto space-y-16">
           <div className="text-center space-y-4 max-w-2xl mx-auto">
             <h2 className="text-xs uppercase tracking-[0.3em] text-wedding-gold font-bold">Simplified Workflow</h2>
@@ -748,7 +746,7 @@ export default function LandingPage() {
             <p className="text-wedding-gray text-sm">Getting your bespoke digital wedding suit is incredibly straightforward. Share details and let us handle the rest.</p>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-8 relative">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 relative">
             
             {/* Visual connector lines for desktop */}
             <div className="hidden md:block absolute top-1/4 left-1/4 right-1/4 h-0.5 bg-wedding-gold/20 -z-10" />
@@ -782,8 +780,8 @@ export default function LandingPage() {
       </section>
 
       {/* About Section / Alappuzha Kerala Base */}
-      <section id="about" className="py-24 px-6 bg-white">
-        <div className="max-w-7xl mx-auto grid md:grid-cols-12 gap-12 items-center">
+      <section id="about" className="py-16 sm:py-24 px-4 sm:px-6 bg-white">
+        <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-12 items-center">
           
           <div className="md:col-span-6 relative rounded-3xl overflow-hidden shadow-2xl border border-wedding-gold/20">
             <img 
@@ -792,13 +790,13 @@ export default function LandingPage() {
               className="w-full object-cover aspect-[4/3] scale-105 hover:scale-100 transition-transform duration-700" 
             />
             {/* Elegant overlay badge */}
-            <div className="absolute bottom-6 left-6 right-6 bg-white/80 backdrop-blur-md p-4 rounded-xl border border-wedding-gold/20 flex items-center gap-3">
-              <div className="w-8 h-8 rounded-full bg-wedding-primary flex items-center justify-center text-white">
-                <MapPin className="w-4 h-4 text-wedding-secondary" />
+            <div className="absolute bottom-4 left-4 right-4 sm:bottom-6 sm:left-6 sm:right-6 bg-white/80 backdrop-blur-md p-3 sm:p-4 rounded-xl border border-wedding-gold/20 flex items-center gap-2 sm:gap-3">
+              <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-wedding-primary flex items-center justify-center text-white flex-shrink-0">
+                <MapPin className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-wedding-secondary" />
               </div>
               <div>
-                <p className="text-[10px] uppercase tracking-wider text-wedding-gold font-bold">Creative HQ</p>
-                <p className="text-xs font-bold text-wedding-primary">Alappuzha, Kerala, India</p>
+                <p className="text-[8px] sm:text-[10px] uppercase tracking-wider text-wedding-gold font-bold">Creative HQ</p>
+                <p className="text-[10px] sm:text-xs font-bold text-wedding-primary">Alappuzha, Kerala, India</p>
               </div>
             </div>
           </div>
@@ -829,8 +827,8 @@ export default function LandingPage() {
       </section>
 
       {/* Interactive Contact & Location Section */}
-      <section id="contact" className="py-24 px-6 bg-wedding-lightGold/20 border-t border-wedding-gold/15 relative">
-        <div className="max-w-7xl mx-auto grid lg:grid-cols-12 gap-12">
+      <section id="contact" className="py-16 sm:py-24 px-4 sm:px-6 bg-wedding-lightGold/20 border-t border-wedding-gold/15 relative">
+        <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12">
           
           {/* Contact Details Left */}
           <div className="lg:col-span-5 space-y-8">
@@ -878,7 +876,7 @@ export default function LandingPage() {
 
           {/* Interactive Enquiry Form Right */}
           <div className="lg:col-span-7">
-            <div className="bg-white p-8 md:p-10 rounded-3xl border border-wedding-gold/15 shadow-xl relative overflow-hidden">
+            <div className="bg-white p-6 sm:p-10 rounded-3xl border border-wedding-gold/15 shadow-xl relative overflow-hidden">
               <div className="absolute top-0 left-0 right-0 h-1.5 bg-wedding-primary" />
               
               {!contactSubmitted ? (
@@ -967,8 +965,8 @@ export default function LandingPage() {
       </section>
 
       {/* Footer */}
-      <footer className="bg-wedding-dark text-white pt-16 pb-8 border-t border-wedding-gold/15">
-        <div className="max-w-7xl mx-auto px-6 grid md:grid-cols-4 gap-8 pb-12 border-b border-white/5">
+      <footer className="bg-wedding-dark text-white pt-12 sm:pt-16 pb-8 border-t border-wedding-gold/15">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8 pb-12 border-b border-white/5">
           
           <div className="space-y-4">
             <div className="flex items-center gap-2 cursor-pointer" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
@@ -1010,7 +1008,7 @@ export default function LandingPage() {
 
         </div>
 
-        <div className="max-w-7xl mx-auto px-6 pt-8 flex flex-col md:flex-row items-center justify-between gap-4 text-[10px] text-white/40 uppercase tracking-widest">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 pt-8 flex flex-col md:flex-row items-center justify-between gap-4 text-[10px] text-white/40 uppercase tracking-widest">
           <p>© {new Date().getFullYear()} AuraVows. All rights reserved.</p>
           <p>Hand-crafted with 💖 for weddings everywhere.</p>
         </div>

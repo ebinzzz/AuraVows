@@ -50,6 +50,7 @@ export default function TemplateCreatorPage() {
   const [config, setConfig] = useState<any>({
     colors: {
       bg: '#FFFEF5',
+      cardBg: '#FFFFFF',
       primary: '#1A1A2E',
       secondary: '#D4AF37',
       text: '#1A1A2E'
@@ -86,8 +87,20 @@ export default function TemplateCreatorPage() {
       const tpl = response.data;
       setName(tpl.name);
       setCategory(tpl.category);
-      setConfig(tpl.config);
-      setSections(tpl.config.layout || []);
+      const loadedConfig = tpl.config || {};
+      if (!loadedConfig.colors) {
+        loadedConfig.colors = {
+          bg: '#FFFEF5',
+          cardBg: '#FFFFFF',
+          primary: '#1A1A2E',
+          secondary: '#D4AF37',
+          text: '#1A1A2E'
+        };
+      } else if (!loadedConfig.colors.cardBg) {
+        loadedConfig.colors.cardBg = '#FFFFFF';
+      }
+      setConfig(loadedConfig);
+      setSections(loadedConfig.layout || []);
     } catch (err) {
       console.error(err);
       alert('Failed to fetch template - check if you are logged in');
@@ -210,20 +223,31 @@ export default function TemplateCreatorPage() {
                 <h2 className="font-bold uppercase text-xs tracking-widest text-wedding-dark">Color Palette</h2>
              </div>
              <div className="grid grid-cols-1 gap-4">
-                {Object.entries(config.colors as Record<string, string>).map(([key, value]) => (
-                  <div key={key} className="space-y-1">
-                    <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">{key}</label>
-                    <div className="flex items-center gap-3">
-                       <input 
-                         type="color" 
-                         className="w-10 h-10 rounded-lg cursor-pointer bg-transparent"
-                         value={value}
-                         onChange={(e) => setConfig({...config, colors: {...config.colors, [key]: e.target.value}})}
-                       />
-                       <code className="text-xs text-gray-500 uppercase">{value}</code>
+                {Object.entries(config.colors as Record<string, string>).map(([key, value]) => {
+                  const niceNames: Record<string, string> = {
+                    bg: 'Page Background',
+                    cardBg: 'Card Background',
+                    primary: 'Primary Text / Headers',
+                    secondary: 'Accent / Secondary Color',
+                    text: 'Body Text Color'
+                  };
+                  return (
+                    <div key={key} className="space-y-1">
+                      <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">
+                        {niceNames[key] || key}
+                      </label>
+                      <div className="flex items-center gap-3">
+                         <input 
+                           type="color" 
+                           className="w-10 h-10 rounded-lg cursor-pointer bg-transparent"
+                           value={value}
+                           onChange={(e) => setConfig({...config, colors: {...config.colors, [key]: e.target.value}})}
+                         />
+                         <code className="text-xs text-gray-500 uppercase">{value}</code>
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  );
+                })}
              </div>
           </section>
 
@@ -455,15 +479,21 @@ export default function TemplateCreatorPage() {
                              )}
                              {s.type === 'parents' && (
                                 <div className="space-y-2">
-                                   <p className="text-[8px] uppercase tracking-widest opacity-60">With Blessings of</p>
-                                   <p className="font-serif italic" style={{ fontSize: 'inherit' }}>Parents Name</p>
+                                   <p className="text-[8px] uppercase tracking-widest font-bold" style={{ color: config.colors.secondary }}>With Blessings of</p>
+                                   <p className="font-serif italic" style={{ fontSize: 'inherit', color: config.colors.primary }}>Parents Name</p>
                                 </div>
                              )}
                              {s.type === 'ceremony' && (
-                                <div className="space-y-2">
-                                   <p className="text-[10px] uppercase tracking-widest font-bold" style={{ color: config.colors.secondary }}>Ceremony</p>
-                                   <p style={{ fontSize: 'inherit' }}>St. Peters Cathedral</p>
-                                   <p className="text-[10px] opacity-60">10:30 AM</p>
+                                <div 
+                                   className="p-6 rounded-[1.5rem] border shadow-md space-y-3 backdrop-blur-md mx-4"
+                                   style={{
+                                      borderColor: config.colors.secondary + '33',
+                                      backgroundColor: config.colors.cardBg || '#FFFFFF',
+                                   }}
+                                >
+                                   <p className="text-[10px] uppercase tracking-[0.2em] font-bold" style={{ color: config.colors.secondary }}>Ceremony</p>
+                                   <p style={{ fontSize: 'inherit', color: config.colors.primary }} className="font-serif text-lg font-bold">St. Peters Cathedral</p>
+                                   <p className="text-[10px] opacity-60" style={{ color: config.colors.text }}>10:30 AM</p>
                                 </div>
                              )}
                              {s.type === 'rsvp' && (
