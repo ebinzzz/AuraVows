@@ -115,3 +115,13 @@ CREATE TABLE IF NOT EXISTS rsvps (
 -- Create index for faster lookups
 CREATE INDEX IF NOT EXISTS idx_users_username ON users(username);
 CREATE INDEX IF NOT EXISTS idx_invitations_code ON invitations(invitation_id);
+
+-- Templates Table
+CREATE TABLE IF NOT EXISTS templates (
+    id UUID PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    category VARCHAR(50),
+    config JSONB NOT NULL,
+    is_system BOOLEAN DEFAULT FALSE,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
