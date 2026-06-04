@@ -150,9 +150,9 @@ export default function CreateInvitationPage() {
             >
               <ArrowLeft className="w-5 h-5" />
             </button>
-            <div>
-              <h1 className="text-2xl font-bold tracking-widest uppercase mb-1">Create New Invitation</h1>
-              <p className="text-white/60 text-xs uppercase tracking-tighter">AuraVows Invitation System</p>
+            <div onClick={() => navigate('/')} className="cursor-pointer">
+              <h1 className="text-2xl font-bold tracking-widest uppercase mb-1 hover:text-wedding-secondary transition-colors">Create New Invitation</h1>
+              <p className="text-white/60 text-xs uppercase tracking-tighter hover:text-white transition-colors">AuraVows Invitation System</p>
             </div>
           </div>
           <button 

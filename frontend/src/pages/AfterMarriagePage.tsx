@@ -272,12 +272,14 @@ export default function AfterMarriagePage() {
         )}
       </AnimatePresence>
 
-      <footer className="py-12 text-center border-t border-[#B89462]/10 mt-12">
-        <div className="flex items-center justify-center gap-3 opacity-30 mb-2">
-          <Heart className="w-4 h-4 fill-current" />
-          <span className="uppercase text-[8px] tracking-[0.5em] font-bold">AuraVows Legacy Memories</span>
-        </div>
-        <p className="text-[10px] uppercase tracking-widest opacity-20 italic">Designed for Eternal Moments</p>
+      <footer className="py-12 text-center border-t border-[#B89462]/10 mt-12 opacity-40">
+        <a href="/" className="inline-block hover:opacity-80 transition-opacity">
+          <div className="flex items-center justify-center gap-3 mb-2">
+            <Heart className="w-4 h-4 fill-current text-[#B89462]" />
+            <span className="uppercase text-[8px] tracking-[0.5em] font-bold text-[#2D241E]">AuraVows Legacy Memories</span>
+          </div>
+          <p className="text-[10px] uppercase tracking-widest opacity-60 italic">Designed for Eternal Moments</p>
+        </a>
       </footer>
     </div>
   );

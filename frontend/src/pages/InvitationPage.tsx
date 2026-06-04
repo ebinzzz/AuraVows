@@ -823,12 +823,16 @@ export default function InvitationPage() {
 
       {/* Footer */}
       <footer className="py-24 text-center opacity-40">
-         <div className="mb-6 flex items-center justify-center gap-3">
-            <LogoIcon className="w-6 h-6 fill-current" />
-            <span className="uppercase text-[10px] tracking-[0.5em] font-bold">AuraVows Premium</span>
-         </div>
+         <a href="/" className="inline-block hover:opacity-80 transition-opacity mb-4">
+           <div className="flex items-center justify-center gap-3">
+              <LogoIcon className="w-6 h-6 fill-current" />
+              <span className="uppercase text-[10px] tracking-[0.5em] font-bold">AuraVows Premium</span>
+           </div>
+         </a>
          <p className="text-xs uppercase tracking-widest mb-2">© 2026 {data.custom_config?.swap_names ? `${data.bride_name} & ${data.groom_name}` : `${data.groom_name} & ${data.bride_name}`}'s Wedding</p>
-         <p className="text-[9px] uppercase tracking-[0.2em] font-bold opacity-50">Powered by AuraVows</p>
+         <p className="text-[9px] uppercase tracking-[0.2em] font-bold opacity-50">
+           Powered by <a href="/" className="hover:underline font-bold">AuraVows</a>
+         </p>
       </footer>
     </div>
   );

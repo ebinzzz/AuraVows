@@ -218,9 +218,9 @@ export default function EditInvitationPage() {
             >
               <ArrowLeft className="w-5 h-5" />
             </button>
-            <div>
-              <h1 className="text-2xl font-bold tracking-widest uppercase mb-1">Update Invitation</h1>
-              <p className="text-white/60 text-[10px] uppercase tracking-tighter">AuraVows Premium Suite • ID: {formData.invitation_id}</p>
+            <div onClick={() => navigate('/')} className="cursor-pointer">
+              <h1 className="text-2xl font-bold tracking-widest uppercase mb-1 hover:text-wedding-secondary transition-colors">Update Invitation</h1>
+              <p className="text-white/60 text-[10px] uppercase tracking-tighter hover:text-white transition-colors">AuraVows Premium Suite • ID: {formData.invitation_id}</p>
             </div>
           </div>
           <button 

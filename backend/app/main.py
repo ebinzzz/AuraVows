@@ -247,3 +247,32 @@ async def upload_file(
         return {"url": f"/static/uploads/{file_name}"}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+# Enquiry Endpoints
+@app.post("/api/enquiries/", response_model=schemas.Enquiry)
+async def create_enquiry(enquiry: schemas.EnquiryCreate, conn: asyncpg.Connection = Depends(get_db)):
+    return await crud.create_enquiry(conn, enquiry)
+
+@app.get("/api/enquiries/", response_model=List[schemas.Enquiry])
+async def list_enquiries(
+    conn: asyncpg.Connection = Depends(get_db),
+    admin: dict = Depends(auth.get_current_admin)
+):
+    return await crud.get_enquiries(conn)
+
+@app.put("/api/enquiries/{enquiry_id}/status", response_model=schemas.Enquiry)
+async def update_enquiry_status(
+    enquiry_id: str,
+    enquiry_update: schemas.EnquiryUpdate,
+    conn: asyncpg.Connection = Depends(get_db),
+    admin: dict = Depends(auth.get_current_admin)
+):
+    try:
+        enquiry_uuid = uuid.UUID(enquiry_id)
+    except ValueError:
+        raise HTTPException(status_code=400, detail="Invalid enquiry ID format")
+    
+    updated = await crud.update_enquiry_status(conn, enquiry_uuid, enquiry_update.status)
+    if not updated:
+        raise HTTPException(status_code=404, detail="Enquiry not found")
+    return updated

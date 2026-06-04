@@ -213,3 +213,23 @@ class Template(TemplateBase):
     created_at: datetime
     
     model_config = ConfigDict(from_attributes=True)
+
+# Enquiry Schemas
+class EnquiryBase(BaseModel):
+    name: str
+    email: str
+    phone: Optional[str] = None
+    message: Optional[str] = None
+
+class EnquiryCreate(EnquiryBase):
+    pass
+
+class EnquiryUpdate(BaseModel):
+    status: Optional[str] = None
+
+class Enquiry(EnquiryBase):
+    id: uuid.UUID
+    status: str
+    created_at: datetime
+
+    model_config = ConfigDict(from_attributes=True)

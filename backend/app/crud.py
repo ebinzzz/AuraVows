@@ -232,3 +232,25 @@ async def update_template(conn: asyncpg.Connection, template_id: uuid.UUID, temp
     
     await conn.execute(query, template_id, *values)
     return await get_template_by_id(conn, template_id)
+
+# Enquiry CRUD
+async def create_enquiry(conn: asyncpg.Connection, enquiry: schemas.EnquiryCreate):
+    enquiry_id = uuid.uuid4()
+    data = enquiry.model_dump()
+    columns = list(data.keys())
+    values = [data[col] for col in columns]
+    
+    query = f"INSERT INTO enquiries (id, {', '.join(columns)}) VALUES ($1, {', '.join([f'${i+2}' for i in range(len(values))])})"
+    await conn.execute(query, enquiry_id, *values)
+    
+    row = await conn.fetchrow("SELECT * FROM enquiries WHERE id = $1", enquiry_id)
+    return dict(row) if row else None
+
+async def get_enquiries(conn: asyncpg.Connection):
+    rows = await conn.fetch("SELECT * FROM enquiries ORDER BY created_at DESC")
+    return [dict(row) for row in rows]
+
+async def update_enquiry_status(conn: asyncpg.Connection, enquiry_id: uuid.UUID, status: str):
+    await conn.execute("UPDATE enquiries SET status = $2 WHERE id = $1", enquiry_id, status)
+    row = await conn.fetchrow("SELECT * FROM enquiries WHERE id = $1", enquiry_id)
+    return dict(row) if row else None

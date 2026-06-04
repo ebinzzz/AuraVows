@@ -293,10 +293,12 @@ export default function SharedRSVPPage() {
       </main>
       
       {/* Footer */}
-      <footer className="no-print py-16 text-center">
+      <footer className="no-print py-16 text-center opacity-70">
          <div className="w-12 h-px bg-wedding-gold/30 mx-auto mb-8"></div>
-         <p className="text-[10px] text-wedding-gold uppercase tracking-[0.4em] font-bold">AuraVows Premium</p>
-         <p className="text-[8px] text-gray-300 mt-2 uppercase tracking-widest font-bold">Premium RSVP Experience</p>
+         <a href="/" className="hover:opacity-85 transition-opacity inline-block">
+            <p className="text-[10px] text-wedding-gold uppercase tracking-[0.4em] font-bold">AuraVows Premium</p>
+            <p className="text-[8px] text-gray-300 mt-2 uppercase tracking-widest font-bold">Premium RSVP Experience</p>
+         </a>
       </footer>
 
       {/* Print Footer */}

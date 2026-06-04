@@ -20,9 +20,10 @@ interface Invitation {
 export default function AdminDashboard() {
   const [invitations, setInvitations] = useState<Invitation[]>([]);
   const [templates, setTemplates] = useState<any[]>([]);
+  const [enquiries, setEnquiries] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
-  const [view, setView] = useState<'invitations' | 'templates'>('invitations');
+  const [view, setView] = useState<'invitations' | 'templates' | 'enquiries'>('invitations');
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -32,12 +33,14 @@ export default function AdminDashboard() {
   const fetchData = async () => {
     setLoading(true);
     try {
-      const [invResponse, tplResponse] = await Promise.all([
+      const [invResponse, tplResponse, enqResponse] = await Promise.all([
         api.get('/invitations/'),
-        api.get('/templates/')
+        api.get('/templates/'),
+        api.get('/enquiries/')
       ]);
       setInvitations(invResponse.data);
       setTemplates(tplResponse.data);
+      setEnquiries(enqResponse.data);
     } catch (err) {
       console.error('Failed to fetch data', err);
     } finally {
@@ -74,10 +77,26 @@ export default function AdminDashboard() {
     }
   };
 
+  const handleUpdateEnquiryStatus = async (id: string, newStatus: string) => {
+    try {
+      const res = await api.put(`/enquiries/${id}/status`, { status: newStatus });
+      setEnquiries(enquiries.map(enq => enq.id === id ? res.data : enq));
+    } catch (err) {
+      console.error('Failed to update enquiry status', err);
+    }
+  };
+
   const filteredInvitations = invitations.filter(invite => 
     invite.bride_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
     invite.groom_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
     invite.invitation_id.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  const filteredEnquiries = enquiries.filter(enq =>
+    enq.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    enq.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    (enq.phone && enq.phone.includes(searchTerm)) ||
+    (enq.message && enq.message.toLowerCase().includes(searchTerm.toLowerCase()))
   );
 
   return (
@@ -85,7 +104,10 @@ export default function AdminDashboard() {
       {/* Header */}
       <header className="bg-wedding-primary text-white py-6 px-10 shadow-2xl flex justify-between items-center sticky top-0 z-50 overflow-hidden">
         <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10"></div>
-        <div className="flex items-center gap-6 relative z-10">
+        <div 
+          onClick={() => navigate('/')}
+          className="cursor-pointer flex items-center gap-6 relative z-10 hover:opacity-90 transition-opacity"
+        >
           <div className="bg-wedding-secondary p-3 rounded-2xl shadow-lg transform rotate-3">
             <Calendar className="w-6 h-6 text-wedding-primary" />
           </div>
@@ -164,6 +186,12 @@ export default function AdminDashboard() {
              className={`pb-4 px-6 text-sm font-bold uppercase tracking-widest transition-all ${view === 'templates' ? 'text-wedding-primary border-b-2 border-wedding-secondary' : 'text-gray-300'}`}
            >
              Custom Templates
+           </button>
+           <button 
+             onClick={() => setView('enquiries')}
+             className={`pb-4 px-6 text-sm font-bold uppercase tracking-widest transition-all ${view === 'enquiries' ? 'text-wedding-primary border-b-2 border-wedding-secondary' : 'text-gray-300'}`}
+           >
+             Enquiries
            </button>
         </div>
 
@@ -283,7 +311,7 @@ export default function AdminDashboard() {
                   </div>
                 ))
               )
-            ) : (
+            ) : view === 'templates' ? (
               templates.length === 0 ? (
                 <div className="col-span-full bg-white border-2 border-dashed border-gray-100 rounded-[3rem] p-24 text-center">
                   <h3 className="text-2xl font-bold text-wedding-primary mb-2">No templates created</h3>
@@ -318,13 +346,76 @@ export default function AdminDashboard() {
                   </div>
                 ))
               )
+            ) : (
+              filteredEnquiries.length === 0 ? (
+                <div className="col-span-full bg-white border-2 border-dashed border-gray-100 rounded-[3rem] p-24 text-center">
+                  <div className="w-24 h-24 bg-wedding-accent rounded-full flex items-center justify-center mx-auto mb-8">
+                    <Users className="w-10 h-10 text-wedding-secondary opacity-30" />
+                  </div>
+                  <h3 className="text-2xl font-bold text-wedding-primary mb-2">No enquiries found</h3>
+                  <p className="text-wedding-gray text-sm">No client submissions received yet.</p>
+                </div>
+              ) : (
+                filteredEnquiries.map((enq) => (
+                  <div key={enq.id} className="bg-white rounded-[2.5rem] shadow-xl border border-gray-50 overflow-hidden p-8 flex flex-col justify-between hover:shadow-2xl transition-all duration-300">
+                    <div className="space-y-4">
+                      <div className="flex justify-between items-center">
+                        <span className={`px-3 py-1.5 rounded-full text-[9px] font-bold uppercase tracking-widest ${
+                          enq.status === 'pending' ? 'bg-amber-100 text-amber-700' :
+                          enq.status === 'contacted' ? 'bg-blue-100 text-blue-700' : 'bg-green-100 text-green-700'
+                        }`}>
+                          {enq.status}
+                        </span>
+                        <span className="text-[10px] text-gray-400">
+                          {new Date(enq.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
+                        </span>
+                      </div>
+                      <div>
+                        <h3 className="text-xl font-bold text-wedding-primary">{enq.name}</h3>
+                        <p className="text-xs text-wedding-gray font-medium">{enq.email} {enq.phone && `• ${enq.phone}`}</p>
+                      </div>
+                      <div className="bg-gray-50 p-4 rounded-2xl border border-gray-100 text-xs text-wedding-gray italic">
+                        "{enq.message}"
+                      </div>
+                    </div>
+                    {enq.status === 'pending' && (
+                      <div className="mt-6 flex gap-2">
+                        <button 
+                          onClick={() => handleUpdateEnquiryStatus(enq.id, 'contacted')}
+                          className="flex-1 bg-wedding-secondary hover:bg-wedding-mid text-wedding-primary py-3 rounded-xl text-[10px] font-bold uppercase tracking-widest transition-all"
+                        >
+                          Mark Contacted
+                        </button>
+                        <button 
+                          onClick={() => handleUpdateEnquiryStatus(enq.id, 'resolved')}
+                          className="flex-1 bg-green-100 hover:bg-green-200 text-green-700 py-3 rounded-xl text-[10px] font-bold uppercase tracking-widest transition-all"
+                        >
+                          Resolve
+                        </button>
+                      </div>
+                    )}
+                    {enq.status === 'contacted' && (
+                      <div className="mt-6">
+                        <button 
+                          onClick={() => handleUpdateEnquiryStatus(enq.id, 'resolved')}
+                          className="w-full bg-green-100 hover:bg-green-200 text-green-700 py-3 rounded-xl text-[10px] font-bold uppercase tracking-widest transition-all"
+                        >
+                          Mark Resolved
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                ))
+              )
             )}
           </div>
         )}
       </main>
       
-      <footer className="p-10 text-center">
-        <p className="text-[10px] text-gray-300 uppercase tracking-[0.3em] font-bold">AuraVows Premium Invitations © 2026</p>
+      <footer className="p-10 text-center opacity-50">
+        <p className="text-[10px] text-gray-300 uppercase tracking-[0.3em] font-bold">
+          <a href="/" className="hover:text-wedding-secondary transition-colors">AuraVows Premium Invitations © 2026</a>
+        </p>
       </footer>
     </div>
   );

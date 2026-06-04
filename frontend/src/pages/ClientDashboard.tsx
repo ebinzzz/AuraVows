@@ -106,7 +106,12 @@ export default function ClientDashboard() {
                 </button>
             )}
             <div>
-                <h1 className="text-lg md:text-xl font-bold uppercase tracking-widest leading-none mb-1">AuraVows Tracker</h1>
+                <h1 
+                  onClick={() => navigate('/')}
+                  className="cursor-pointer text-lg md:text-xl font-bold uppercase tracking-widest leading-none mb-1 hover:text-wedding-lightGold transition-colors"
+                >
+                  AuraVows Tracker
+                </h1>
                 <p className="text-[8px] text-wedding-lightGold/60 uppercase tracking-[0.2em] font-bold">Premium RSVP Management</p>
             </div>
             </div>
@@ -328,9 +333,11 @@ export default function ClientDashboard() {
       </main>
 
       {/* Footer */}
-      <footer className="no-print py-12 text-center">
+      <footer className="no-print py-12 text-center opacity-50">
          <div className="w-10 h-1 bg-wedding-gold/20 mx-auto mb-6 rounded-full"></div>
-         <p className="text-[10px] text-gray-300 uppercase tracking-[0.4em] font-bold">AuraVows Premium Invitations © 2026</p>
+         <p className="text-[10px] text-gray-300 uppercase tracking-[0.4em] font-bold">
+           <a href="/" className="hover:text-wedding-gold transition-colors">AuraVows Premium Invitations © 2026</a>
+         </p>
       </footer>
 
       {/* Print Footer */}

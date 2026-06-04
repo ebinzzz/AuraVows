@@ -43,10 +43,18 @@ export default function LoginPage() {
     <div className="min-h-screen bg-wedding-lightGray flex items-center justify-center p-4">
       <div className="max-w-md w-full bg-white rounded-xl shadow-2xl overflow-hidden border border-wedding-gold/20">
         <div className="bg-wedding-dark p-8 text-center">
-          <div className="inline-flex items-center justify-center w-16 height-16 bg-wedding-gold rounded-full mb-4">
+          <div 
+            onClick={() => navigate('/')}
+            className="cursor-pointer inline-flex items-center justify-center w-16 h-16 bg-wedding-gold rounded-full mb-4 hover:scale-105 transition-transform"
+          >
             <Heart className="text-white w-8 h-8 fill-current" />
           </div>
-          <h1 className="text-2xl font-bold text-white uppercase tracking-widest">AuraVows Login</h1>
+          <h1 
+            onClick={() => navigate('/')}
+            className="cursor-pointer text-2xl font-bold text-white uppercase tracking-widest hover:text-wedding-gold transition-colors"
+          >
+            AuraVows Login
+          </h1>
           <p className="text-wedding-lightGold/60 italic text-sm mt-2">Sign in to manage your invitation</p>
         </div>
         
