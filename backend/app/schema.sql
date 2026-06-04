@@ -75,6 +75,9 @@ ALTER TABLE invitations ADD COLUMN IF NOT EXISTS hero_subtitle_1 TEXT;
 ALTER TABLE invitations ADD COLUMN IF NOT EXISTS hero_subtitle_2 TEXT;
 ALTER TABLE invitations ADD COLUMN IF NOT EXISTS after_marriage_photos JSONB;
 ALTER TABLE invitations ADD COLUMN IF NOT EXISTS after_marriage_text TEXT;
+ALTER TABLE invitations ADD COLUMN IF NOT EXISTS wedding_day_music_url VARCHAR(500);
+ALTER TABLE invitations ADD COLUMN IF NOT EXISTS live_stream_url VARCHAR(500);
+ALTER TABLE invitations ADD COLUMN IF NOT EXISTS after_marriage_bg_opacity FLOAT DEFAULT 0.4;
 
 -- Users Table
 CREATE TABLE IF NOT EXISTS users (
