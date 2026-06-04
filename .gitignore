@@ -23,6 +23,7 @@ wheels/
 backend/venv/
 backend/static/uploads/*
 !backend/static/uploads/.gitkeep
+!backend/static/uploads/default_silhouette.png
 
 # Node / React
 node_modules/
