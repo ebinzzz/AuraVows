@@ -1,7 +1,7 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import api from '../lib/api';
-import { Heart, Check, Users, Utensils, MessageSquare, Phone, ArrowLeft } from 'lucide-react';
+import { Heart, Check, Users, Utensils, MessageSquare, ArrowLeft } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 export default function RSVPPage() {
