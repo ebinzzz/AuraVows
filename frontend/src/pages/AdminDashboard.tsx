@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import api from '../lib/api';
-import { Plus, Users, Calendar, MapPin, ExternalLink, LogOut, Search, Filter, MoreVertical, Edit3, Trash2, Palette, Heart } from 'lucide-react';
+import { Plus, Users, Calendar, MapPin, ExternalLink, LogOut, Search, Filter, MoreVertical, Edit3, Trash2, Palette, Heart, Copy } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 interface Invitation {
@@ -73,6 +73,36 @@ export default function AdminDashboard() {
       } catch (err) {
         console.error('Failed to delete invitation', err);
         alert('Failed to delete invitation. Please try again.');
+      }
+    }
+  };
+
+  const handleDuplicateTemplate = async (templateId: string) => {
+    try {
+      setLoading(true);
+      const res = await api.post(`/templates/${templateId}/duplicate`);
+      setTemplates([res.data, ...templates]);
+      alert('Template duplicated successfully!');
+    } catch (err) {
+      console.error('Failed to duplicate template', err);
+      alert('Failed to duplicate template. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleDeleteTemplate = async (templateId: string) => {
+    if (window.confirm('Are you sure you want to delete this template? This action cannot be undone.')) {
+      try {
+        setLoading(true);
+        await api.delete(`/templates/${templateId}`);
+        setTemplates(templates.filter(tpl => tpl.id !== templateId));
+        alert('Template deleted successfully!');
+      } catch (err) {
+        console.error('Failed to delete template', err);
+        alert('Failed to delete template. Please try again.');
+      } finally {
+        setLoading(false);
       }
     }
   };
@@ -336,13 +366,31 @@ export default function AdminDashboard() {
                         ))}
                       </div>
                     </div>
-                    <button 
-                      onClick={() => navigate(`/admin/templates/edit/${template.id}`)}
-                      className="w-full bg-wedding-secondary hover:bg-wedding-mid text-wedding-primary py-4 rounded-2xl text-[10px] font-bold uppercase tracking-widest transition-all flex items-center justify-center gap-2"
-                    >
-                      <Edit3 className="w-4 h-4" />
-                      Edit Design
-                    </button>
+                    <div className="flex gap-3">
+                      <button 
+                        onClick={() => navigate(`/admin/templates/edit/${template.id}`)}
+                        className="flex-1 bg-wedding-secondary hover:bg-wedding-mid text-wedding-primary py-4 rounded-2xl text-[10px] font-bold uppercase tracking-widest transition-all flex items-center justify-center gap-2"
+                      >
+                        <Edit3 className="w-4 h-4" />
+                        Edit Design
+                      </button>
+                      <button 
+                        onClick={() => handleDuplicateTemplate(template.id)}
+                        className="w-14 bg-wedding-accent text-wedding-primary rounded-2xl hover:bg-wedding-secondary hover:text-white transition-all flex items-center justify-center"
+                        title="Duplicate Template"
+                      >
+                        <Copy className="w-4 h-4" />
+                      </button>
+                      {!template.is_system && (
+                        <button 
+                          onClick={() => handleDeleteTemplate(template.id)}
+                          className="w-14 bg-red-50 text-red-500 rounded-2xl hover:bg-red-500 hover:text-white transition-all flex items-center justify-center"
+                          title="Delete Template"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      )}
+                    </div>
                   </div>
                 ))
               )

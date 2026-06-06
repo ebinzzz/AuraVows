@@ -205,6 +205,50 @@ async def create_template(
 ):
     return await crud.create_template(conn, template)
 
+@app.post("/api/templates/{template_id}/duplicate", response_model=schemas.Template)
+async def duplicate_template(
+    template_id: str,
+    conn: asyncpg.Connection = Depends(get_db),
+    admin: dict = Depends(auth.get_current_admin)
+):
+    import uuid
+    try:
+        template_uuid = uuid.UUID(template_id)
+    except ValueError:
+        raise HTTPException(status_code=400, detail="Invalid template ID format")
+    
+    db_template = await crud.get_template_by_id(conn, template_uuid)
+    if not db_template:
+        raise HTTPException(status_code=404, detail="Template not found")
+    
+    duplicate_data = schemas.TemplateCreate(
+        name=f"Copy of {db_template['name']}",
+        category=db_template.get('category'),
+        config=db_template.get('config'),
+        is_system=False
+    )
+    
+    return await crud.create_template(conn, duplicate_data)
+
+@app.delete("/api/templates/{template_id}")
+async def delete_template(
+    template_id: str,
+    conn: asyncpg.Connection = Depends(get_db),
+    admin: dict = Depends(auth.get_current_admin)
+):
+    import uuid
+    try:
+        template_uuid = uuid.UUID(template_id)
+    except ValueError:
+        raise HTTPException(status_code=400, detail="Invalid template ID format")
+    
+    db_template = await crud.get_template_by_id(conn, template_uuid)
+    if not db_template:
+        raise HTTPException(status_code=404, detail="Template not found")
+        
+    await conn.execute("DELETE FROM templates WHERE id = $1", template_uuid)
+    return {"message": "Template deleted successfully"}
+
 @app.get("/api/templates/", response_model=List[schemas.Template])
 async def list_templates(conn: asyncpg.Connection = Depends(get_db)):
     return await crud.get_templates(conn)
