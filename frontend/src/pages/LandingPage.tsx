@@ -529,7 +529,7 @@ export default function LandingPage() {
                   {/* Mock App Header */}
                   <div className="bg-[#4A0E0E] text-white pt-8 sm:pt-10 pb-3 sm:pb-4 px-4 sm:px-6 text-center shadow-md">
                     <Heart className="w-4 sm:w-5 h-4 sm:h-5 text-wedding-secondary fill-wedding-secondary mx-auto mb-1 animate-pulse" />
-                    <h4 className="font-serif text-xs sm:text-sm font-bold tracking-widest text-[#FFF9EB]">EBIN & AURA</h4>
+                    <h4 className="font-serif text-xs sm:text-sm font-bold tracking-widest text-[#FFF9EB]">ARJUN & SNEHA</h4>
                     <p className="text-[7px] sm:text-[8px] uppercase tracking-widest text-wedding-secondary font-semibold">Forever Together</p>
                   </div>
 
@@ -546,7 +546,7 @@ export default function LandingPage() {
                         >
                           <div className="border border-wedding-gold/20 p-6 rounded-2xl bg-white shadow-sm space-y-4">
                             <span className="text-[8px] uppercase tracking-widest text-wedding-gold font-bold">You Are Invited</span>
-                            <h5 className="font-serif text-2xl text-wedding-primary">The Marriage of Ebin & Aura</h5>
+                            <h5 className="font-serif text-2xl text-wedding-primary">The Marriage of Arjun & Sneha</h5>
                             <p className="text-[10px] text-wedding-gray italic">"Love does not consist in gazing at each other, but in looking outward together in the same direction."</p>
                             <div className="h-px bg-wedding-gold/15 w-20 mx-auto" />
                             <div className="text-[11px] font-semibold text-wedding-primary tracking-wider space-y-1">
@@ -605,7 +605,7 @@ export default function LandingPage() {
                                       <input 
                                         type="text" 
                                         required
-                                        placeholder="e.g. Benny Ebin"
+                                        placeholder="e.g. Benny Arjun"
                                         value={rsvpName}
                                         onChange={(e) => setRsvpName(e.target.value)}
                                         className="w-full px-3 py-2 border border-gray-200 rounded-lg outline-none focus:ring-1 focus:ring-wedding-gold text-xs"
@@ -846,7 +846,7 @@ export default function LandingPage() {
                 </div>
                 <div>
                   <p className="text-[10px] uppercase tracking-wider text-wedding-gray font-semibold">Email Us</p>
-                  <a href="mailto:ebinbenny777@gmail.com" className="text-sm font-bold text-wedding-primary hover:underline">ebinbenny777@gmail.com</a>
+                  <a href="mailto:auravows@gmail.com" className="text-sm font-bold text-wedding-primary hover:underline">auravows@gmail.com</a>
                 </div>
               </div>
 
@@ -952,7 +952,7 @@ export default function LandingPage() {
                   </div>
                   <h3 className="font-serif text-2xl font-bold text-emerald-800">Message Received!</h3>
                   <p className="text-wedding-gray text-sm max-w-sm mx-auto">
-                    Thank you <strong>{contactName}</strong>. Your enquiry details has been dispatched to <strong>ebinbenny777@gmail.com</strong>. We will get back to you shortly.
+                    Thank you <strong>{contactName}</strong>. Your enquiry details has been dispatched to <strong>auravows@gmail.com</strong>. We will get back to you shortly.
                   </p>
                   <div className="h-px bg-gray-100 w-24 mx-auto my-4" />
                   <p className="text-xs text-wedding-gold italic">A copy of the notification has been logged for Alappuzha, Kerala support team.</p>
@@ -1001,7 +1001,7 @@ export default function LandingPage() {
           <div>
             <h4 className="font-bold text-xs uppercase tracking-widest text-wedding-secondary mb-4">Contact Info</h4>
             <div className="flex flex-col gap-2.5 text-xs text-white/70">
-              <p className="flex items-center gap-2"><Mail className="w-3.5 h-3.5 text-wedding-secondary" /> ebinbenny777@gmail.com</p>
+              <p className="flex items-center gap-2"><Mail className="w-3.5 h-3.5 text-wedding-secondary" /> auravows@gmail.com</p>
               <p className="flex items-center gap-2"><Phone className="w-3.5 h-3.5 text-wedding-secondary" /> +91 8590594735</p>
             </div>
           </div>

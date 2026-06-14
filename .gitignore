@@ -55,3 +55,4 @@ scratch/
 migrate_*.py
 seed_admin_temp.py
 .gemini/
+test-node/

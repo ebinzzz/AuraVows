@@ -1,5 +1,14 @@
 .PHONY: install run-frontend run-backend run init-db seed-admin help
 
+# Prepend local node binaries to PATH if they exist (prevents WSL from falling back to Windows node/npm)
+LOCAL_BIN := $(CURDIR)/test-node/bin
+ifneq ($(wildcard $(LOCAL_BIN)),)
+export PATH := $(LOCAL_BIN):$(PATH)
+endif
+
+# Detect package manager: use pnpm if available, otherwise fallback to npm
+PM ?= $(shell PATH="$(PATH)" command -v pnpm >/dev/null 2>&1 && echo pnpm || echo npm)
+
 help:
 	@echo "Available commands:"
 	@echo "  install      - Install frontend and backend dependencies"
@@ -10,13 +19,13 @@ help:
 	@echo "  run          - Run both frontend and backend concurrently"
 
 install:
-	@echo "Installing frontend dependencies..."
-	cd frontend && pnpm install
+	@echo "Installing frontend dependencies using $(PM)..."
+	cd frontend && $(PM) install
 	@echo "Installing backend dependencies..."
 	cd backend && ./venv/bin/pip install -r requirements.txt
 
 run-frontend:
-	cd frontend && pnpm run dev
+	cd frontend && $(PM) run dev
 
 run-backend:
 	cd backend && ./venv/bin/uvicorn app.main:app --reload
