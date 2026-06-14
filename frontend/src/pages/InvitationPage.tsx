@@ -49,6 +49,7 @@ interface InvitationData {
   hero_subtitle_2?: string;
   after_marriage_photos?: string[];
   after_marriage_text?: string;
+  is_active?: boolean;
 }
 
 interface CustomTemplate {
@@ -207,18 +208,17 @@ export default function InvitationPage() {
     window.open(url, '_blank');
   };
 
-  const triggerFlowerShower = () => {
-    setShoweringFlowers(true);
-    setFlowerKey(prev => prev + 1);
-    setTimeout(() => setShoweringFlowers(false), 8000);
-  };
-
   useEffect(() => {
     const fetchData = async () => {
       try {
         const response = await api.get(`/invitations/${id}`);
         const invData = response.data;
         setData(invData);
+
+        if (invData.is_active === false) {
+          setError('inactive');
+          return;
+        }
 
         // Instant redirect if passed
         const indiaTimeStr = new Date().toLocaleString("en-US", { timeZone: "Asia/Kolkata" });

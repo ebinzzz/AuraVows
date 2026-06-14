@@ -19,6 +19,7 @@ interface InvitationData {
   background_music_url?: string;
   template?: string;
   custom_config?: any;
+  is_active?: boolean;
 }
 
 export default function AfterMarriagePage() {
@@ -26,6 +27,7 @@ export default function AfterMarriagePage() {
   const navigate = useNavigate();
   const [data, setData] = useState<InvitationData | null>(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<'not_found' | 'inactive' | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [audio] = useState(new Audio());
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
@@ -40,12 +42,17 @@ export default function AfterMarriagePage() {
           audio.src = getImageUrl(response.data.background_music_url);
           audio.loop = true;
           // Attempt auto-play
-          audio.play().then(() => setIsPlaying(true)).catch(e => {
+          audio.play().then(() => setIsPlaying(true)).catch(() => {
              console.log("Auto-play blocked by browser, waiting for interaction");
           });
         }
-      } catch (err) {
+      } catch (err: any) {
         console.error(err);
+        if (err.response?.status === 403) {
+          setError('inactive');
+        } else {
+          setError('not_found');
+        }
       } finally {
         setLoading(false);
       }
@@ -80,7 +87,41 @@ export default function AfterMarriagePage() {
     </div>
   );
 
-  if (!data) return <div>Not Found</div>;
+  if (error === 'inactive') return (
+    <div className="min-h-screen flex items-center justify-center bg-[#FFFEF5] px-6">
+      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="max-w-md w-full text-center space-y-8 p-12 rounded-3xl bg-white shadow-2xl border border-wedding-gold/20">
+        <div className="flex justify-center">
+          <div className="w-20 h-20 bg-wedding-lightGold/30 rounded-full flex items-center justify-center">
+            <Heart className="w-10 h-10 text-wedding-gold opacity-40" />
+          </div>
+        </div>
+        <h2 className="text-3xl font-serif text-wedding-dark">Invitation Closed</h2>
+        <p className="text-wedding-gray italic leading-relaxed">
+          This invitation is currently inactive or the event has passed.
+          Please contact the family directly for any inquiries.
+        </p>
+        <div className="w-12 h-px bg-wedding-gold/30 mx-auto"></div>
+        <p className="text-[10px] uppercase tracking-[0.3em] text-wedding-gold font-bold">Forever & Always</p>
+      </motion.div>
+    </div>
+  );
+
+  if (error || !data) return (
+    <div className="min-h-screen flex items-center justify-center bg-[#FFFEF5] px-6">
+      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="max-w-md w-full text-center space-y-8 p-12 rounded-3xl bg-white shadow-2xl border border-red-50">
+        <div className="flex justify-center">
+          <div className="w-20 h-20 bg-red-50 rounded-full flex items-center justify-center">
+            <Heart className="w-10 h-10 text-red-200" />
+          </div>
+        </div>
+        <h2 className="text-3xl font-serif text-wedding-dark">Invitation Not Found</h2>
+        <p className="text-wedding-gray italic leading-relaxed">
+          We couldn't find the invitation you're looking for.
+          Please double-check the link or contact the host.
+        </p>
+      </motion.div>
+    </div>
+  );
 
   const photos = data.after_marriage_photos || [];
 

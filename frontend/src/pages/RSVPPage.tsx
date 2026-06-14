@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import api from '../lib/api';
 import { Heart, Check, Users, Utensils, MessageSquare, ArrowLeft } from 'lucide-react';
@@ -9,6 +9,8 @@ export default function RSVPPage() {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const [fetching, setFetching] = useState(true);
+  const [error, setError] = useState<'not_found' | 'inactive' | null>(null);
   const [formData, setFormData] = useState({
     guest_name: '',
     attending: true,
@@ -18,6 +20,80 @@ export default function RSVPPage() {
     message_to_couple: '',
     phone_number: '',
   });
+
+  useEffect(() => {
+    const fetchInvitation = async () => {
+      try {
+        const response = await api.get(`/invitations/${id}`);
+        if (response.data.is_active === false) {
+          setError('inactive');
+        }
+      } catch (err: any) {
+        console.error(err);
+        if (err.response?.status === 403) {
+          setError('inactive');
+        } else {
+          setError('not_found');
+        }
+      } finally {
+        setFetching(false);
+      }
+    };
+    fetchInvitation();
+  }, [id]);
+
+  if (fetching) {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center bg-[#FFFEF5]">
+        <div className="relative w-24 h-24 flex items-center justify-center">
+          <div className="absolute inset-0 border-2 border-wedding-gold/20 rounded-full"></div>
+          <div className="absolute inset-0 border-t-2 border-wedding-gold rounded-full animate-spin"></div>
+          <Heart className="w-8 h-8 text-wedding-gold animate-pulse fill-wedding-gold/10" />
+        </div>
+        <p className="mt-6 text-xs uppercase tracking-[0.3em] text-wedding-gold font-bold animate-pulse">Loading Magic...</p>
+      </div>
+    );
+  }
+
+  if (error === 'inactive') {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-[#FFFEF5] px-6">
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="max-w-md w-full text-center space-y-8 p-12 rounded-3xl bg-white shadow-2xl border border-wedding-gold/20">
+          <div className="flex justify-center">
+            <div className="w-20 h-20 bg-wedding-lightGold/30 rounded-full flex items-center justify-center">
+              <Heart className="w-10 h-10 text-wedding-gold opacity-40" />
+            </div>
+          </div>
+          <h2 className="text-3xl font-serif text-wedding-dark">Invitation Closed</h2>
+          <p className="text-wedding-gray italic leading-relaxed">
+            This invitation is currently inactive or the event has passed.
+            Please contact the family directly for any inquiries.
+          </p>
+          <div className="w-12 h-px bg-wedding-gold/30 mx-auto"></div>
+          <p className="text-[10px] uppercase tracking-[0.3em] text-wedding-gold font-bold">Forever & Always</p>
+        </motion.div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-[#FFFEF5] px-6">
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="max-w-md w-full text-center space-y-8 p-12 rounded-3xl bg-white shadow-2xl border border-red-50">
+          <div className="flex justify-center">
+            <div className="w-20 h-20 bg-red-50 rounded-full flex items-center justify-center">
+              <Heart className="w-10 h-10 text-red-200" />
+            </div>
+          </div>
+          <h2 className="text-3xl font-serif text-wedding-dark">Invitation Not Found</h2>
+          <p className="text-wedding-gray italic leading-relaxed">
+            We couldn't find the invitation you're looking for.
+            Please double-check the link or contact the host.
+          </p>
+        </motion.div>
+      </div>
+    );
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
