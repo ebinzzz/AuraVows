@@ -42,13 +42,65 @@ export default function CreateInvitationPage() {
     hero_subtitle_2: "We extend a warm invitation to join the wedding celebration of",
     after_marriage_photos: [] as string[],
     after_marriage_text: '',
-    after_marriage_bg_opacity: 0.4
+    after_marriage_bg_opacity: 0.4,
+    parent_id: null as string | null
   });
   const [customTemplates, setCustomTemplates] = useState<any[]>([]);
 
   useEffect(() => {
     fetchCustomTemplates();
+    const params = new URLSearchParams(window.location.search);
+    const pId = params.get('parent_id');
+    if (pId) {
+      loadParentData(pId);
+    }
   }, []);
+
+  const loadParentData = async (pId: string) => {
+    setLoading(true);
+    try {
+      const response = await api.get(`/invitations/by-id/${pId}`);
+      const parentData = response.data;
+      setFormData(prev => ({
+        ...prev,
+        parent_id: pId,
+        bride_name: parentData.bride_name || '',
+        groom_name: parentData.groom_name || '',
+        bride_parents: parentData.bride_parents || '',
+        bride_family: parentData.bride_family || '',
+        groom_parents: parentData.groom_parents || '',
+        groom_family: parentData.groom_family || '',
+        compliments_title: parentData.compliments_title || 'WITH THE BLESSINGS OF OUR ELDERS',
+        compliments_names: parentData.compliments_names || '',
+        template: parentData.template || 'royal',
+        hero_bg_image: parentData.hero_bg_image || '',
+        hero_bg_opacity: parentData.hero_bg_opacity ?? 0.5,
+        custom_config: parentData.custom_config || {},
+        background_music_url: parentData.background_music_url || '',
+        gallery_photos: parentData.gallery_photos || [],
+        event_timeline: parentData.event_timeline || [],
+        invitation_wording: parentData.invitation_wording || '',
+        invitation_quote: parentData.invitation_quote || '',
+        opening_verse: parentData.opening_verse || '',
+        opening_verse_ref: parentData.opening_verse_ref || '',
+        hero_subtitle_1: parentData.hero_subtitle_1 || '',
+        hero_subtitle_2: parentData.hero_subtitle_2 || '',
+        after_marriage_photos: parentData.after_marriage_photos || [],
+        after_marriage_text: parentData.after_marriage_text || '',
+        after_marriage_bg_opacity: parentData.after_marriage_bg_opacity ?? 0.4,
+        wedding_date: parentData.wedding_date || '',
+        wedding_time: parentData.wedding_time || '',
+        venue_name: parentData.venue_name || '',
+        venue_address: parentData.venue_address || '',
+        venue_map_url: parentData.venue_map_url || '',
+        venue_phone: parentData.venue_phone || ''
+      }));
+    } catch (err) {
+      console.error("Failed to load parent invitation data", err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const fetchCustomTemplates = async () => {
     try {
@@ -83,11 +135,12 @@ export default function CreateInvitationPage() {
     setLoading(true);
     try {
       const cleanedData = Object.fromEntries(
-        Object.entries(formData).filter(([_, v]) => v !== '')
+        Object.entries(formData).filter(([_, v]) => v !== '' && v !== null)
       );
       
       await api.post('/invitations/', {
         ...cleanedData,
+        parent_id: formData.parent_id,
         invitation_link: formData.invitation_link,
         qr_code_data: formData.qr_code_data,
         is_active: formData.is_active
@@ -150,9 +203,10 @@ export default function CreateInvitationPage() {
             >
               <ArrowLeft className="w-5 h-5" />
             </button>
-            <div onClick={() => navigate('/')} className="cursor-pointer">
-              <h1 className="text-2xl font-bold tracking-widest uppercase mb-1 hover:text-wedding-secondary transition-colors">Create New Invitation</h1>
-              <p className="text-white/60 text-xs uppercase tracking-tighter hover:text-white transition-colors">AuraVows Invitation System</p>
+            <div onClick={() => navigate('/')} className="cursor-pointer flex items-center gap-4 bg-white/95 px-4 py-2 rounded-2xl">
+              <img src="/logo.png" alt="AuraVows Logo" className="h-8 w-auto object-contain" />
+              <div className="h-6 w-px bg-wedding-primary/20"></div>
+              <span className="text-xs font-bold uppercase tracking-widest text-wedding-primary">Create New Invitation</span>
             </div>
           </div>
           <button 
@@ -172,6 +226,24 @@ export default function CreateInvitationPage() {
       </header>
 
       <main className="flex-1 p-8 lg:p-12">
+        {formData.parent_id && (
+          <div className="max-w-5xl mx-auto mb-8 p-6 bg-gradient-to-r from-wedding-accent/40 to-white/90 border border-wedding-gold/20 rounded-3xl flex items-center justify-between shadow-md">
+            <div className="flex items-center gap-3">
+              <Sparkles className="w-5 h-5 text-wedding-gold animate-pulse" />
+              <div>
+                <span className="block text-xs font-bold uppercase tracking-wider text-wedding-primary">
+                  Creating Secondary Event Invitation
+                </span>
+                <span className="block text-[10px] text-wedding-gray font-medium mt-0.5">
+                  This page shares the exact same design and RSVP database as the main invitation.
+                </span>
+              </div>
+            </div>
+            <span className="text-[9px] bg-wedding-secondary text-wedding-primary px-3 py-1.5 rounded-full font-bold uppercase tracking-widest border border-wedding-gold/20">
+              Shares RSVP List
+            </span>
+          </div>
+        )}
         <form id="invite-form" onSubmit={handleSubmit} className="max-w-5xl mx-auto space-y-12 pb-24">
           
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
@@ -471,6 +543,7 @@ export default function CreateInvitationPage() {
                 </div>
                 <div className="p-8 grid grid-cols-1 md:grid-cols-3 gap-6">
                   {[
+                    { id: 'auravows', name: 'AuraVows Premium', color: 'bg-[#4E2A12]', desc: 'Copper Gold & Floral with Sticky Navigation Bar' },
                     { id: 'royal', name: 'Royal Classic', color: 'bg-[#4A0E0E]', desc: 'Deep Maroon & Gold' },
                     { id: 'modern', name: 'Modern Sage', color: 'bg-[#7C8E7B]', desc: 'Soft Sage & Minimal' },
                     { id: 'floral', name: 'Floral Rose', color: 'bg-[#C08497]', desc: 'Dusty Rose & Elegant' },

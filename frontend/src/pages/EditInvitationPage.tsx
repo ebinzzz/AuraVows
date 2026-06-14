@@ -218,9 +218,10 @@ export default function EditInvitationPage() {
             >
               <ArrowLeft className="w-5 h-5" />
             </button>
-            <div onClick={() => navigate('/')} className="cursor-pointer">
-              <h1 className="text-2xl font-bold tracking-widest uppercase mb-1 hover:text-wedding-secondary transition-colors">Update Invitation</h1>
-              <p className="text-white/60 text-[10px] uppercase tracking-tighter hover:text-white transition-colors">AuraVows Premium Suite • ID: {formData.invitation_id}</p>
+            <div onClick={() => navigate('/')} className="cursor-pointer flex items-center gap-4 bg-white/95 px-4 py-2 rounded-2xl">
+              <img src="/logo.png" alt="AuraVows Logo" className="h-8 w-auto object-contain" />
+              <div className="h-6 w-px bg-wedding-primary/20"></div>
+              <span className="text-xs font-bold uppercase tracking-widest text-wedding-primary">Update Invitation</span>
             </div>
           </div>
           <button 
@@ -484,6 +485,7 @@ export default function EditInvitationPage() {
                 </div>
                 <div className="p-8 grid grid-cols-1 md:grid-cols-3 gap-6">
                   {[
+                    { id: 'auravows', name: 'AuraVows Premium', color: 'bg-[#4E2A12]', desc: 'Copper Gold & Floral with Sticky Navigation Bar' },
                     { id: 'royal', name: 'Royal Classic', color: 'bg-[#4A0E0E]', desc: 'Deep Maroon & Gold' },
                     { id: 'modern', name: 'Modern Sage', color: 'bg-[#7C8E7B]', desc: 'Soft Sage & Minimal' },
                     { id: 'floral', name: 'Floral Rose', color: 'bg-[#C08497]', desc: 'Dusty Rose & Elegant' },

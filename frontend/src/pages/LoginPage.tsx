@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../lib/api';
-import { Heart } from 'lucide-react';
 
 export default function LoginPage() {
   const [username, setUsername] = useState('');
@@ -45,15 +44,15 @@ export default function LoginPage() {
         <div className="bg-wedding-dark p-8 text-center">
           <div 
             onClick={() => navigate('/')}
-            className="cursor-pointer inline-flex items-center justify-center w-16 h-16 bg-wedding-gold rounded-full mb-4 hover:scale-105 transition-transform"
+            className="cursor-pointer inline-flex items-center justify-center p-3 bg-white rounded-xl mb-4 hover:scale-105 transition-transform"
           >
-            <Heart className="text-white w-8 h-8 fill-current" />
+            <img src="/logo.png" alt="AuraVows Logo" className="h-12 w-auto object-contain" />
           </div>
           <h1 
             onClick={() => navigate('/')}
             className="cursor-pointer text-2xl font-bold text-white uppercase tracking-widest hover:text-wedding-gold transition-colors"
           >
-            AuraVows Login
+            Login
           </h1>
           <p className="text-wedding-lightGold/60 italic text-sm mt-2">Sign in to manage your invitation</p>
         </div>

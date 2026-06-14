@@ -112,6 +112,23 @@ async def read_invitation(
         raise HTTPException(status_code=403, detail="This invitation is currently inactive")
     return db_invitation
 
+@app.get("/api/invitations/by-id/{id}", response_model=schemas.Invitation)
+async def get_invitation_by_uuid(id: uuid.UUID, conn: asyncpg.Connection = Depends(get_db)):
+    row = await conn.fetchrow("SELECT * FROM invitations WHERE id = $1", id)
+    if not row:
+        raise HTTPException(status_code=404, detail="Invitation not found")
+    import json
+    d = dict(row)
+    if d.get('custom_config') and isinstance(d['custom_config'], str):
+        d['custom_config'] = json.loads(d['custom_config'])
+    if d.get('gallery_photos') and isinstance(d['gallery_photos'], str):
+        d['gallery_photos'] = json.loads(d['gallery_photos'])
+    if d.get('event_timeline') and isinstance(d['event_timeline'], str):
+        d['event_timeline'] = json.loads(d['event_timeline'])
+    if d.get('after_marriage_photos') and isinstance(d['after_marriage_photos'], str):
+        d['after_marriage_photos'] = json.loads(d['after_marriage_photos'])
+    return d
+
 @app.put("/api/invitations/{invitation_id}", response_model=schemas.Invitation)
 async def update_invitation(
     invitation_id: str,
