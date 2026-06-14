@@ -50,6 +50,8 @@ interface InvitationData {
   after_marriage_photos?: string[];
   after_marriage_text?: string;
   is_active?: boolean;
+  after_marriage_bg_opacity?: number;
+  parent_id?: string | null;
 }
 
 interface CustomTemplate {
@@ -103,6 +105,39 @@ export default function InvitationPage() {
   const [isWeddingDay, setIsWeddingDay] = useState(false);
   const [showeringFlowers, setShoweringFlowers] = useState(false);
   const [flowerKey, setFlowerKey] = useState(0);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+  let dayStr = "25";
+  let monthStr = "MAY";
+  let yearStr = "2026";
+  let weekdayStr = "MONDAY";
+  let timeStr = "5:00 PM ONWARDS";
+
+  if (data?.wedding_date) {
+    try {
+      const dateParts = data.wedding_date.split("-");
+      let dateObj: Date;
+      if (dateParts.length === 3) {
+        dateObj = new Date(parseInt(dateParts[0]), parseInt(dateParts[1]) - 1, parseInt(dateParts[2]));
+      } else {
+        dateObj = new Date(data.wedding_date);
+      }
+      
+      if (!isNaN(dateObj.getTime())) {
+        dayStr = dateObj.getDate().toString().padStart(2, '0');
+        monthStr = dateObj.toLocaleDateString("en-US", { month: "short" }).toUpperCase();
+        yearStr = dateObj.getFullYear().toString();
+        weekdayStr = dateObj.toLocaleDateString("en-US", { weekday: "long" }).toUpperCase();
+      }
+    } catch (e) {
+      console.error("Error formatting date", e);
+    }
+  }
+
+  if (data?.wedding_time) {
+    const rawTime = data.wedding_time.toUpperCase();
+    timeStr = rawTime + (rawTime.includes("ONWARDS") ? "" : " ONWARDS");
+  }
 
   useEffect(() => {
     if (data?.wedding_date) {
@@ -207,7 +242,33 @@ export default function InvitationPage() {
     const url = `https://www.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent('Wedding: ' + names)}&dates=${dateStr}/${dateStr}&details=${encodeURIComponent('Join us for our wedding ceremony!')}&location=${encodeURIComponent(data.venue_name + ', ' + data.venue_address)}`;
     window.open(url, '_blank');
   };
+  const triggerFlowerShower = () => {
+    setShoweringFlowers(true);
+    setFlowerKey(prev => prev + 1);
+    setTimeout(() => setShoweringFlowers(false), 8000);
+  };
 
+  const handleRSVPClick = async () => {
+    if (data?.parent_id) {
+      try {
+        const response = await api.get(`/invitations/by-id/${data.parent_id}`);
+        const parentCode = response.data.invitation_id;
+        navigate(`/invite/${parentCode}/rsvp`);
+      } catch (err) {
+        console.error("Failed to fetch parent invitation code", err);
+        navigate(`/invite/${id}/rsvp`);
+      }
+    } else {
+      navigate(`/invite/${id}/rsvp`);
+    }
+  };
+
+  const scrollToSection = (sectionId: string) => {
+    const el = document.getElementById(`section-${sectionId}`);
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  };
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -314,29 +375,46 @@ export default function InvitationPage() {
         silhouetteSize: cfg.silhouetteSize || 200,
         silhouetteOpacity: cfg.silhouetteOpacity ?? 0.3,
         showSilhouette: cfg.showSilhouette !== false,
-        custom_config: data.custom_config || {}
+        custom_config: data.custom_config || {},
+        showBottomNav: false
       };
     }
 
     switch (data.template) {
+      case 'auravows':
+        return {
+          bg: 'bg-[#FAF6F0]', text: 'text-[#4E2A12]', accent: 'text-[#C5A880]',
+          button: 'bg-[#4E2A12] text-white hover:bg-[#5C3818] transition-colors', card: 'bg-white/85 border-[#C5A880]/30 backdrop-blur-sm shadow-md rounded-3xl',
+          heroOverlay: 'bg-[#4E2A12]/5', font: 'font-serif', isCustom: false, showFlowers: true,
+          showBottomNav: true,
+          heroBgImage: '/auravows_hero.png', heroBgOpacity: 0.12,
+          logo: 'heart', pattern: 'none', showSilhouette: false, silhouetteSize: 0, silhouetteOpacity: 0,
+          colors: { bg: '#FAF6F0', primary: '#4E2A12', secondary: '#C5A880', text: '#4E2A12' }
+        };
       case 'modern':
         return {
           bg: 'bg-[#F9FBF9]', text: 'text-wedding-sage', accent: 'text-wedding-sage',
           button: 'bg-wedding-sage hover:bg-opacity-90', card: 'bg-white border-wedding-sage/20',
-          heroOverlay: 'bg-wedding-sage/5', font: 'font-sans', isCustom: false, showFlowers: false
+          heroOverlay: 'bg-wedding-sage/5', font: 'font-sans', isCustom: false, showFlowers: false,
+          showBottomNav: false, logo: 'heart', pattern: 'none', showSilhouette: true, silhouetteSize: 200, silhouetteOpacity: 0.3,
+          colors: { bg: '#F9FBF9', primary: '#4A5D4E', secondary: '#7F9F85', text: '#4A5D4E' }
         };
       case 'floral':
         return {
           bg: 'bg-[#FFF5F7]', text: 'text-wedding-rose', accent: 'text-wedding-rose',
           button: 'bg-wedding-rose hover:bg-opacity-90', card: 'bg-white border-wedding-rose/20',
-          heroOverlay: 'bg-wedding-rose/5', font: 'font-serif', isCustom: false
+          heroOverlay: 'bg-wedding-rose/5', font: 'font-serif', isCustom: false,
+          showBottomNav: false, logo: 'heart', pattern: 'none', showSilhouette: true, silhouetteSize: 200, silhouetteOpacity: 0.3,
+          colors: { bg: '#FFF5F7', primary: '#8C3E52', secondary: '#D97E96', text: '#8C3E52' }
         };
       case 'royal':
       default:
         return {
           bg: 'bg-[#FFFEF5]', text: 'text-wedding-dark', accent: 'text-wedding-gold',
           button: 'bg-wedding-gold hover:bg-wedding-mid', card: 'bg-white border-wedding-gold/20',
-          heroOverlay: 'bg-wedding-gold/5', font: 'font-serif', isCustom: false
+          heroOverlay: 'bg-wedding-gold/5', font: 'font-serif', isCustom: false,
+          showBottomNav: false, logo: 'heart', pattern: 'none', showSilhouette: true, silhouetteSize: 200, silhouetteOpacity: 0.3,
+          colors: { bg: '#FFFEF5', primary: '#1A1A1A', secondary: '#D4AF37', text: '#1A1A1A' }
         };
     }
   };
@@ -379,88 +457,119 @@ export default function InvitationPage() {
 
           {type === 'hero' && (
             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 1 }} className="space-y-4">
-              <div className="flex justify-center mb-0 relative z-10">
-                <LogoIcon className="w-10 h-10" style={styles.isCustom ? { color: styles.colors.secondary } : {}} />
-              </div>
-              <div className="space-y-4 relative z-10">
-                <div className="space-y-0.5">
-                  <p className="uppercase tracking-[0.3em] text-[9px] font-bold opacity-60" style={styles.isCustom ? { color: styles.colors.secondary } : {}}>
-                    {data.hero_subtitle_1 || "Together with our families"}
-                  </p>
-                  <p className="uppercase tracking-[0.1em] text-[10px] italic opacity-80 px-4" style={styles.isCustom ? { color: styles.colors.text } : {}}>
-                    {data.hero_subtitle_2 || "We extend a warm invitation to join the wedding celebration of"}
-                  </p>
-                </div>
-                {data.custom_config?.swap_names ? (
-                  <>
-                    <div className="space-y-1">
-                      <h1 className={`${styles.font} text-4xl md:text-7xl`} style={{ ...(styles.isCustom ? { color: styles.colors.primary } : {}), fontSize: section.fontSize ? `${section.fontSize}px` : undefined }}>{data.bride_name}</h1>
-                      <div className="space-y-0.5 opacity-70" style={{ ...(styles.isCustom ? { color: styles.colors.text } : {}) }}>
-                        <p className="italic text-sm">Daughter of {data.bride_parents}</p>
-                        {data.bride_family && <p className="font-bold tracking-widest text-[11px] uppercase">{data.bride_family}</p>}
-                      </div>
-                    </div>
-                    <div className="flex items-center justify-center gap-3 w-full">
-                      <div className="h-px w-10 bg-current opacity-20" />
-                      <span className="text-3xl font-serif italic opacity-40">&</span>
-                      <div className="h-px w-10 bg-current opacity-20" />
-                    </div>
-                    <div className="space-y-1">
-                      <h1 className={`${styles.font} text-4xl md:text-7xl`} style={{ ...(styles.isCustom ? { color: styles.colors.primary } : {}), fontSize: section.fontSize ? `${section.fontSize}px` : undefined }}>{data.groom_name}</h1>
-                      <div className="space-y-0.5 opacity-70" style={{ ...(styles.isCustom ? { color: styles.colors.text } : {}) }}>
-                        <p className="italic text-sm">Son of {data.groom_parents}</p>
-                        {data.groom_family && <p className="font-bold tracking-widest text-[11px] uppercase">{data.groom_family}</p>}
-                      </div>
-                    </div>
-                  </>
+              <div className="flex justify-center mb-2 relative z-10">
+                {data.template === 'auravows' ? (
+                  <img src="/logo.png" alt="AuraVows Logo" className="h-24 md:h-28 w-auto object-contain" />
                 ) : (
-                  <>
-                    <div className="space-y-1">
-                      <h1 className={`${styles.font} text-4xl md:text-7xl`} style={{ ...(styles.isCustom ? { color: styles.colors.primary } : {}), fontSize: section.fontSize ? `${section.fontSize}px` : undefined }}>{data.groom_name}</h1>
-                      <div className="space-y-0.5 opacity-70" style={{ ...(styles.isCustom ? { color: styles.colors.text } : {}) }}>
-                        <p className="italic text-sm">Son of {data.groom_parents}</p>
-                        {data.groom_family && <p className="font-bold tracking-widest text-[11px] uppercase">{data.groom_family}</p>}
-                      </div>
-                    </div>
-                    <div className="flex items-center justify-center gap-3 w-full">
-                      <div className="h-px w-10 bg-current opacity-20" />
-                      <span className="text-3xl font-serif italic opacity-40">&</span>
-                      <div className="h-px w-10 bg-current opacity-20" />
-                    </div>
-                    <div className="space-y-1">
-                      <h1 className={`${styles.font} text-4xl md:text-7xl`} style={{ ...(styles.isCustom ? { color: styles.colors.primary } : {}), fontSize: section.fontSize ? `${section.fontSize}px` : undefined }}>{data.bride_name}</h1>
-                      <div className="space-y-0.5 opacity-70" style={{ ...(styles.isCustom ? { color: styles.colors.text } : {}) }}>
-                        <p className="italic text-sm">Daughter of {data.bride_parents}</p>
-                        {data.bride_family && <p className="font-bold tracking-widest text-[11px] uppercase">{data.bride_family}</p>}
-                      </div>
-                    </div>
-                  </>
-                )}
-                <div className="pt-6 space-y-2">
-                  <div className="w-40 h-px mx-auto opacity-50" style={styles.isCustom ? { backgroundColor: styles.colors.secondary } : { backgroundColor: '#D4AF37' }} />
-                  <p className={`text-3xl md:text-4xl ${styles.font} font-bold tracking-widest`} style={styles.isCustom ? { color: styles.colors.primary } : {}}>
-                    {new Date(data.wedding_date).toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' })}
-                  </p>
-                  <p className="text-xl tracking-[0.3em] uppercase opacity-70" style={styles.isCustom ? { color: styles.colors.text } : {}}>{data.wedding_time}</p>
-                  <div className="w-40 h-px mx-auto opacity-50" style={styles.isCustom ? { backgroundColor: styles.colors.secondary } : { backgroundColor: '#D4AF37' }} />
-                </div>
-
-                {/* Default Silhouette above wording */}
-                {type === 'hero' && !styles.heroBgImage && styles.showSilhouette !== false && (
-                  <div className="pt-8 flex justify-center">
-                    <motion.img
-                      initial={{ opacity: 0, y: 10 }}
-                      whileInView={{ opacity: styles.silhouetteOpacity ?? 0.35, y: 0 }}
-                      src={getImageUrl(DEFAULT_SILHOUETTE)}
-                      style={{
-                        width: styles.silhouetteSize ? `${styles.silhouetteSize}px` : '200px'
-                      }}
-                      className="h-auto mix-blend-multiply"
-                      alt="Wedding"
-                    />
-                  </div>
+                  <LogoIcon className="w-10 h-10" style={styles.isCustom ? { color: styles.colors.secondary } : {}} />
                 )}
               </div>
+              
+              {data.template === 'auravows' ? (
+                <div className="space-y-8 relative z-10 pt-4 text-center px-4">
+                  <p className="uppercase tracking-[0.25em] text-[10px] font-bold text-[#4E2A12]/60">
+                    {data.hero_subtitle_1 || "TOGETHER WITH THEIR FAMILIES"}
+                  </p>
+                  
+                  <h1 className="font-serif text-5xl md:text-7xl text-[#4E2A12] font-normal tracking-wide py-2">
+                    {data.custom_config?.swap_names 
+                      ? `${data.bride_name} & ${data.groom_name}` 
+                      : `${data.groom_name} & ${data.bride_name}`}
+                  </h1>
+                  
+                  {/* Gold flourish heart separator */}
+                  <div className="flex items-center justify-center gap-4 w-full py-2 text-[#C5A880]">
+                    <div className="h-[1px] w-16 bg-gradient-to-r from-transparent to-[#C5A880]/60" />
+                    <svg className="w-14 h-5 fill-current text-[#C5A880]" viewBox="0 0 64 20">
+                      <path d="M2,10 C15,2 24,8 28,10 C24,11 15,11 10,12 C18,8 24,9 28,10" stroke="currentColor" strokeWidth="0.75" fill="none" strokeLinecap="round" />
+                      <path d="M32,15 C31,13.5 28.5,11 28.5,8.5 C28.5,6.5 30,5 32,7 C34,5 35.5,6.5 35.5,8.5 C35.5,11 33,13.5 32,15 Z" fill="currentColor" />
+                      <path d="M62,10 C49,2 40,8 36,10 C40,11 49,11 54,12 C46,8 40,9 36,10" stroke="currentColor" strokeWidth="0.75" fill="none" strokeLinecap="round" />
+                    </svg>
+                    <div className="h-[1px] w-16 bg-gradient-to-l from-transparent to-[#C5A880]/60" />
+                  </div>
+
+                  <p className="uppercase tracking-[0.2em] text-[10px] font-bold text-[#4E2A12]/60 pt-2 max-w-[280px] mx-auto leading-relaxed">
+                    {data.hero_subtitle_2 || "INVITE YOU TO CELEBRATE THEIR WEDDING"}
+                  </p>
+
+                  <div className="pt-6 space-y-3">
+                    <div className="flex items-center justify-center gap-8 text-3xl font-serif font-bold text-[#4E2A12] py-2 select-none tracking-widest">
+                      <span>{dayStr}</span>
+                      <span className="text-[#C5A880]/60 font-light text-2xl">|</span>
+                      <span>{monthStr}</span>
+                      <span className="text-[#C5A880]/60 font-light text-2xl">|</span>
+                      <span>{yearStr}</span>
+                    </div>
+                    <p className="text-[10px] tracking-[0.2em] font-semibold text-[#4E2A12]/80 uppercase">
+                      {weekdayStr} • {timeStr}
+                    </p>
+                  </div>
+                </div>
+              ) : (
+                <div className="space-y-4 relative z-10">
+                  <div className="space-y-0.5">
+                    <p className="uppercase tracking-[0.3em] text-[9px] font-bold opacity-60" style={styles.isCustom ? { color: styles.colors.secondary } : {}}>
+                      {data.hero_subtitle_1 || "Together with our families"}
+                    </p>
+                    <p className="uppercase tracking-[0.1em] text-[10px] italic opacity-80 px-4" style={styles.isCustom ? { color: styles.colors.text } : {}}>
+                      {data.hero_subtitle_2 || "We extend a warm invitation to join the wedding celebration of"}
+                    </p>
+                  </div>
+                  {data.custom_config?.swap_names ? (
+                    <>
+                      <div className="space-y-1">
+                        <h1 className={`${styles.font} text-4xl md:text-7xl`} style={{ ...(styles.isCustom ? { color: styles.colors.primary } : {}), fontSize: section.fontSize ? `${section.fontSize}px` : undefined }}>{data.bride_name}</h1>
+                        <div className="space-y-0.5 opacity-70" style={{ ...(styles.isCustom ? { color: styles.colors.text } : {}) }}>
+                          <p className="italic text-sm">Daughter of {data.bride_parents}</p>
+                          {data.bride_family && <p className="font-bold tracking-widest text-[11px] uppercase">{data.bride_family}</p>}
+                        </div>
+                      </div>
+                      <div className="flex items-center justify-center gap-3 w-full">
+                        <div className="h-px w-10 bg-current opacity-20" />
+                        <span className="text-3xl font-serif italic opacity-40">&</span>
+                        <div className="h-px w-10 bg-current opacity-20" />
+                      </div>
+                      <div className="space-y-1">
+                        <h1 className={`${styles.font} text-4xl md:text-7xl`} style={{ ...(styles.isCustom ? { color: styles.colors.primary } : {}), fontSize: section.fontSize ? `${section.fontSize}px` : undefined }}>{data.groom_name}</h1>
+                        <div className="space-y-0.5 opacity-70" style={{ ...(styles.isCustom ? { color: styles.colors.text } : {}) }}>
+                          <p className="italic text-sm">Son of {data.groom_parents}</p>
+                          {data.groom_family && <p className="font-bold tracking-widest text-[11px] uppercase">{data.groom_family}</p>}
+                        </div>
+                      </div>
+                    </>
+                  ) : (
+                    <>
+                      <div className="space-y-1">
+                        <h1 className={`${styles.font} text-4xl md:text-7xl`} style={{ ...(styles.isCustom ? { color: styles.colors.primary } : {}), fontSize: section.fontSize ? `${section.fontSize}px` : undefined }}>{data.groom_name}</h1>
+                        <div className="space-y-0.5 opacity-70" style={{ ...(styles.isCustom ? { color: styles.colors.text } : {}) }}>
+                          <p className="italic text-sm">Son of {data.groom_parents}</p>
+                          {data.groom_family && <p className="font-bold tracking-widest text-[11px] uppercase">{data.groom_family}</p>}
+                        </div>
+                      </div>
+                      <div className="flex items-center justify-center gap-3 w-full">
+                        <div className="h-px w-10 bg-current opacity-20" />
+                        <span className="text-3xl font-serif italic opacity-40">&</span>
+                        <div className="h-px w-10 bg-current opacity-20" />
+                      </div>
+                      <div className="space-y-1">
+                        <h1 className={`${styles.font} text-4xl md:text-7xl`} style={{ ...(styles.isCustom ? { color: styles.colors.primary } : {}), fontSize: section.fontSize ? `${section.fontSize}px` : undefined }}>{data.bride_name}</h1>
+                        <div className="space-y-0.5 opacity-70" style={{ ...(styles.isCustom ? { color: styles.colors.text } : {}) }}>
+                          <p className="italic text-sm">Daughter of {data.bride_parents}</p>
+                          {data.bride_family && <p className="font-bold tracking-widest text-[11px] uppercase">{data.bride_family}</p>}
+                        </div>
+                      </div>
+                    </>
+                  )}
+                  <div className="pt-6 space-y-2">
+                    <div className="w-40 h-px mx-auto opacity-50" style={styles.isCustom ? { backgroundColor: styles.colors.secondary } : { backgroundColor: '#D4AF37' }} />
+                    <p className={`text-3xl md:text-4xl ${styles.font} font-bold tracking-widest`} style={styles.isCustom ? { color: styles.colors.primary } : {}}>
+                      {new Date(data.wedding_date).toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' })}
+                    </p>
+                    <p className="text-xl tracking-[0.3em] uppercase opacity-70" style={styles.isCustom ? { color: styles.colors.text } : {}}>{data.wedding_time}</p>
+                    <div className="w-40 h-px mx-auto opacity-50" style={styles.isCustom ? { backgroundColor: styles.colors.secondary } : { backgroundColor: '#D4AF37' }} />
+                  </div>
+                </div>
+              )}
             </motion.div>
           )}
 
@@ -502,8 +611,8 @@ export default function InvitationPage() {
               style={{
                 borderColor: styles.isCustom ? styles.colors.secondary + '33' : undefined,
                 backgroundColor: styles.isCustom
-                  ? styles.colors.cardBg || 'rgba(255, 255, 255, 0.8)'
-                  : (data.template === 'modern' ? 'rgba(249, 251, 249, 0.8)' : data.template === 'floral' ? 'rgba(255, 245, 247, 0.8)' : 'rgba(255, 254, 245, 0.8)')
+                  ? (styles.colors as any).cardBg || 'rgba(255, 255, 255, 0.8)'
+                  : (data.template === 'modern' ? 'rgba(249, 251, 249, 0.8)' : data.template === 'floral' ? 'rgba(255, 245, 247, 0.8)' : data.template === 'auravows' ? 'rgba(255, 255, 255, 0.85)' : 'rgba(255, 254, 245, 0.8)')
               }}
             >
               <div className="absolute top-0 right-0 p-6">
@@ -563,7 +672,7 @@ export default function InvitationPage() {
               <h2 className={`text-4xl md:text-6xl ${styles.font} italic`} style={styles.isCustom ? { color: styles.colors.primary } : {}}>Will you join us?</h2>
               <p className="opacity-50 text-xs tracking-widest uppercase">Kindly respond to let us know your plans</p>
               <button
-                onClick={() => window.location.href += '/rsvp'}
+                onClick={handleRSVPClick}
                 className="px-10 md:px-16 py-4 md:py-6 rounded-full font-bold uppercase tracking-[0.3em] shadow-2xl transition-all hover:scale-105 active:scale-95 text-white"
                 style={styles.isCustom ? { backgroundColor: styles.colors.secondary } : { backgroundColor: '#D4AF37' }}
               >
@@ -588,29 +697,60 @@ export default function InvitationPage() {
                   <p className="text-[10px] uppercase tracking-[0.4em] opacity-50">Congratulations to the Happy Couple</p>
                 </div>
               ) : (
-                <div className="grid grid-cols-4 gap-2 md:gap-8 max-w-3xl mx-auto">
-                  {[
-                    { label: 'Days', value: timeLeft.days },
-                    { label: 'Hours', value: timeLeft.hours },
-                    { label: 'Minutes', value: timeLeft.minutes },
-                    { label: 'Seconds', value: timeLeft.seconds },
-                  ].map((item, i) => (
-                    <div key={i} className="flex flex-col items-center relative">
-                      <div className="relative group">
-                        <div className="text-3xl sm:text-4xl md:text-7xl font-serif font-bold mb-3 tracking-tighter" style={styles.isCustom ? { color: styles.colors.primary } : {}}>
-                          {String(item.value).padStart(2, '0')}
+                data.template === 'auravows' ? (
+                  <div className="space-y-8 px-4">
+                    <div className="border border-[#C5A880]/30 rounded-2xl py-4 px-2 bg-[#FAF5EE]/50 backdrop-blur-md max-w-sm mx-auto grid grid-cols-4 divide-x divide-[#C5A880]/20 text-center shadow-sm">
+                      {[
+                        { label: 'DAYS', value: timeLeft.days },
+                        { label: 'HOURS', value: timeLeft.hours },
+                        { label: 'MINUTES', value: timeLeft.minutes },
+                        { label: 'SECONDS', value: timeLeft.seconds },
+                      ].map((item, i) => (
+                        <div key={i} className="flex flex-col items-center justify-center px-1">
+                          <div className="text-3xl font-serif font-semibold text-[#4E2A12] tracking-tighter">
+                            {String(item.value).padStart(2, '0')}
+                          </div>
+                          <div className="text-[8px] uppercase tracking-[0.2em] opacity-60 font-bold mt-1 text-[#4E2A12]/80">
+                            {item.label}
+                          </div>
                         </div>
-                        <motion.div
-                          className="absolute -bottom-1 left-0 right-0 h-px opacity-20"
-                          style={styles.isCustom ? { backgroundColor: styles.colors.secondary } : { backgroundColor: '#D4AF37' }}
-                          initial={{ width: 0 }}
-                          whileInView={{ width: '100%' }}
-                        />
-                      </div>
-                      <div className="text-[8px] md:text-[10px] uppercase tracking-[0.4em] opacity-40 font-bold mt-2">{item.label}</div>
+                      ))}
                     </div>
-                  ))}
-                </div>
+                    
+                    {/* Featured Couple Photo */}
+                    <div className="max-w-sm mx-auto">
+                      <img 
+                        src={data.gallery_photos && data.gallery_photos.length > 0 ? getImageUrl(data.gallery_photos[0]) : "/couple_default.png"} 
+                        alt="Couple" 
+                        className="w-full h-auto object-cover rounded-3xl shadow-sm"
+                      />
+                    </div>
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-4 gap-2 md:gap-8 max-w-3xl mx-auto">
+                    {[
+                      { label: 'Days', value: timeLeft.days },
+                      { label: 'Hours', value: timeLeft.hours },
+                      { label: 'Minutes', value: timeLeft.minutes },
+                      { label: 'Seconds', value: timeLeft.seconds },
+                    ].map((item, i) => (
+                      <div key={i} className="flex flex-col items-center relative">
+                        <div className="relative group">
+                          <div className="text-3xl sm:text-4xl md:text-7xl font-serif font-bold mb-3 tracking-tighter" style={styles.isCustom ? { color: styles.colors.primary } : {}}>
+                            {String(item.value).padStart(2, '0')}
+                          </div>
+                          <motion.div
+                            className="absolute -bottom-1 left-0 right-0 h-px opacity-20"
+                            style={styles.isCustom ? { backgroundColor: styles.colors.secondary } : { backgroundColor: '#D4AF37' }}
+                            initial={{ width: 0 }}
+                            whileInView={{ width: '100%' }}
+                          />
+                        </div>
+                        <div className="text-[8px] md:text-[10px] uppercase tracking-[0.4em] opacity-40 font-bold mt-2">{item.label}</div>
+                      </div>
+                    ))}
+                  </div>
+                )
               )}
             </motion.div>
           )}
@@ -717,14 +857,14 @@ export default function InvitationPage() {
     );
   };
 
-  const defaultLayout = isWeddingDay
+  const defaultLayout = (isWeddingDay && data?.template !== 'auravows')
     ? ['hero', 'ceremony', 'timeline', 'gallery'] // Simplified for Wedding Day
     : ['hero', 'countdown', 'ceremony', 'timeline', 'parents', 'gallery', 'rsvp'];
 
   let layout: any[] = styles.isCustom ? styles.layout.filter((s: any) => s.visible) : defaultLayout;
 
-  // Filter out RSVP on wedding day even if in custom layout
-  if (isWeddingDay) {
+  // Filter out RSVP on wedding day even if in custom layout (except for auravows)
+  if (isWeddingDay && data?.template !== 'auravows') {
     layout = layout.filter(s => (s.type || s) !== 'rsvp' && (s.type || s) !== 'countdown');
   }
 
@@ -741,9 +881,77 @@ export default function InvitationPage() {
 
   return (
     <div 
-      className="min-h-screen relative selection:bg-wedding-gold selection:text-white flex flex-col"
-      style={styles.isCustom ? { backgroundColor: styles.colors.bg, color: styles.colors.text } : {}}
+      className={`min-h-screen relative selection:bg-wedding-gold selection:text-white flex flex-col ${styles.showBottomNav ? 'pb-32 md:pb-28' : ''}`}
+      style={data?.template === 'auravows' ? { background: 'radial-gradient(circle, #FCF9F5 0%, #FAF5EE 100%)', color: '#4E2A12' } : (styles.isCustom ? { backgroundColor: styles.colors.bg, color: styles.colors.text } : {})}
     >
+      {/* Decorative absolute flowers for AuraVows */}
+      {data?.template === 'auravows' && (
+        <>
+          {/* Top Left Corner Leaf/Flower Ornament */}
+          <div className="absolute top-0 left-0 w-40 h-40 pointer-events-none opacity-25 text-[#C5A880] z-0">
+            <svg viewBox="0 0 100 100" className="w-full h-full fill-none stroke-current" strokeWidth="0.5">
+              <path d="M 0,0 C 30,10 60,30 80,60 C 50,50 20,30 0,0 Z" fill="currentColor" fillOpacity="0.03" />
+              <path d="M 0,10 C 20,20 40,40 50,70" />
+              <path d="M 10,0 C 20,20 40,40 70,50" />
+              <path d="M 0,0 C 15,25 35,45 60,60" />
+              <path d="M 25,25 C 35,20 45,15 50,10" />
+              <path d="M 25,25 C 20,35 15,45 10,50" />
+              <path d="M 40,40 C 50,35 60,30 65,25" />
+              <path d="M 40,40 C 35,50 30,60 25,65" />
+              <path d="M 55,55 C 65,50 75,45 80,40" />
+              <path d="M 55,55 C 50,65 45,75 40,80" />
+            </svg>
+          </div>
+          {/* Top Right Corner Leaf/Flower Ornament */}
+          <div className="absolute top-0 right-0 w-40 h-40 pointer-events-none opacity-25 text-[#C5A880] z-0 scale-x-[-1]">
+            <svg viewBox="0 0 100 100" className="w-full h-full fill-none stroke-current" strokeWidth="0.5">
+              <path d="M 0,0 C 30,10 60,30 80,60 C 50,50 20,30 0,0 Z" fill="currentColor" fillOpacity="0.03" />
+              <path d="M 0,10 C 20,20 40,40 50,70" />
+              <path d="M 10,0 C 20,20 40,40 70,50" />
+              <path d="M 0,0 C 15,25 35,45 60,60" />
+              <path d="M 25,25 C 35,20 45,15 50,10" />
+              <path d="M 25,25 C 20,35 15,45 10,50" />
+              <path d="M 40,40 C 50,35 60,30 65,25" />
+              <path d="M 40,40 C 35,50 30,60 25,65" />
+              <path d="M 55,55 C 65,50 75,45 80,40" />
+              <path d="M 55,55 C 50,65 45,75 40,80" />
+            </svg>
+          </div>
+        </>
+      )}
+
+      {/* Floating Hamburger Menu Button */}
+      {data?.template === 'auravows' && !showOverlay && (
+        <>
+          <button 
+            onClick={() => setIsMenuOpen(!isMenuOpen)}
+            className="fixed top-8 right-6 z-50 p-2 text-[#4E2A12] hover:opacity-80 focus:outline-none bg-transparent"
+          >
+            <div className="space-y-1.5 w-6">
+              <span className={`block h-0.5 w-6 bg-[#4E2A12] transition-transform ${isMenuOpen ? 'rotate-45 translate-y-2' : ''}`}></span>
+              <span className={`block h-0.5 w-6 bg-[#4E2A12] transition-opacity ${isMenuOpen ? 'opacity-0' : ''}`}></span>
+              <span className={`block h-0.5 w-6 bg-[#4E2A12] transition-transform ${isMenuOpen ? '-rotate-45 -translate-y-2' : ''}`}></span>
+            </div>
+          </button>
+          
+          {isMenuOpen && (
+            <motion.div 
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              className="fixed inset-x-0 top-0 bg-[#FAF6F0] z-40 border-b border-[#C5A880]/30 shadow-xl p-8 pt-20 max-w-md mx-auto rounded-b-[2rem] text-center select-none"
+            >
+              <div className="flex flex-col gap-6 font-serif text-lg text-[#4E2A12]">
+                <button onClick={() => { scrollToSection('parents'); setIsMenuOpen(false); }} className="hover:text-[#C5A880] transition-colors uppercase tracking-widest text-xs font-bold">Our Story</button>
+                <button onClick={() => { scrollToSection('timeline'); setIsMenuOpen(false); }} className="hover:text-[#C5A880] transition-colors uppercase tracking-widest text-xs font-bold">Events</button>
+                <button onClick={() => { scrollToSection('gallery'); setIsMenuOpen(false); }} className="hover:text-[#C5A880] transition-colors uppercase tracking-widest text-xs font-bold">Gallery</button>
+                <button onClick={() => { handleRSVPClick(); setIsMenuOpen(false); }} className="hover:text-[#C5A880] transition-colors uppercase tracking-widest text-xs font-bold">RSVP</button>
+                <button onClick={() => { scrollToSection('ceremony'); setIsMenuOpen(false); }} className="hover:text-[#C5A880] transition-colors uppercase tracking-widest text-xs font-bold">Venue</button>
+              </div>
+            </motion.div>
+          )}
+        </>
+      )}
       {/* Welcome Overlay (Ensures Music Plays on Mobile) */}
       {showOverlay && (
         <motion.div 
@@ -791,7 +999,7 @@ export default function InvitationPage() {
       )}
 
       {/* Hero Background Image */}
-      {styles.isCustom && styles.heroBgImage && (
+      {styles.heroBgImage && (
         <div 
           className="absolute inset-0 pointer-events-none z-0 bg-cover bg-center" 
           style={{ 
@@ -803,7 +1011,7 @@ export default function InvitationPage() {
 
       <div className="relative z-10 flex-grow">
         {layout.map((section, index) => (
-          <div key={index}>
+          <div key={index} id={`section-${section.type || section}`}>
             {renderSection(section)}
           </div>
         ))}
@@ -858,6 +1066,116 @@ export default function InvitationPage() {
           </motion.button>
         )}
       </div>
+
+      {styles.showBottomNav && !showOverlay && (
+        <div className="fixed bottom-0 left-0 right-0 bg-[#4E2A12] text-white shadow-[0_-8px_30px_rgba(0,0,0,0.15)] py-4 px-4 z-[99] flex justify-around items-center border-t border-[#C5A880]/20 md:max-w-md md:mx-auto md:rounded-t-3xl">
+          {data?.template === 'auravows' ? (
+            <>
+              <button 
+                onClick={() => scrollToSection('parents')}
+                className="flex flex-col items-center gap-1.5 group focus:outline-none"
+              >
+                <div className="w-12 h-12 rounded-full flex items-center justify-center bg-[#FAF6F0] hover:bg-white shadow-md transition-all">
+                  <Heart className="w-5 h-5 text-[#4E2A12]" />
+                </div>
+                <span className="text-[9px] font-medium text-[#FAF6F0] opacity-90 group-hover:opacity-100 transition-opacity">Our Story</span>
+              </button>
+
+              <button 
+                onClick={() => scrollToSection('timeline')}
+                className="flex flex-col items-center gap-1.5 group focus:outline-none"
+              >
+                <div className="w-12 h-12 rounded-full flex items-center justify-center bg-[#FAF6F0] hover:bg-white shadow-md transition-all">
+                  <Calendar className="w-5 h-5 text-[#4E2A12]" />
+                </div>
+                <span className="text-[9px] font-medium text-[#FAF6F0] opacity-90 group-hover:opacity-100 transition-opacity">Events</span>
+              </button>
+
+              <button 
+                onClick={() => scrollToSection('gallery')}
+                className="flex flex-col items-center gap-1.5 group focus:outline-none"
+              >
+                <div className="w-12 h-12 rounded-full flex items-center justify-center bg-[#FAF6F0] hover:bg-white shadow-md transition-all">
+                  <ImageIcon className="w-5 h-5 text-[#4E2A12]" />
+                </div>
+                <span className="text-[9px] font-medium text-[#FAF6F0] opacity-90 group-hover:opacity-100 transition-opacity">Gallery</span>
+              </button>
+
+              <button 
+                onClick={handleRSVPClick}
+                className="flex flex-col items-center gap-1.5 group focus:outline-none"
+              >
+                <div className="w-12 h-12 rounded-full flex items-center justify-center bg-[#FAF6F0] hover:bg-white shadow-md transition-all">
+                  <Clock className="w-5 h-5 text-[#4E2A12]" />
+                </div>
+                <span className="text-[9px] font-medium text-[#FAF6F0] opacity-90 group-hover:opacity-100 transition-opacity">RSVP</span>
+              </button>
+
+              <button 
+                onClick={() => scrollToSection('ceremony')}
+                className="flex flex-col items-center gap-1.5 group focus:outline-none"
+              >
+                <div className="w-12 h-12 rounded-full flex items-center justify-center bg-[#FAF6F0] hover:bg-white shadow-md transition-all">
+                  <MapPin className="w-5 h-5 text-[#4E2A12]" />
+                </div>
+                <span className="text-[9px] font-medium text-[#FAF6F0] opacity-90 group-hover:opacity-100 transition-opacity">Venue</span>
+              </button>
+            </>
+          ) : (
+            <>
+              <button 
+                onClick={() => scrollToSection('parents')}
+                className="flex flex-col items-center gap-1 group focus:outline-none"
+              >
+                <div className="w-10 h-10 rounded-full border border-[#C5A880]/30 flex items-center justify-center bg-white/5 group-hover:bg-[#C5A880]/20 group-hover:border-[#C5A880]/60 transition-all">
+                  <Heart className="w-4 h-4 text-[#C5A880] fill-[#C5A880]/10" />
+                </div>
+                <span className="text-[9px] uppercase tracking-[0.15em] font-semibold text-[#FAF6F0] opacity-80 group-hover:opacity-100 transition-opacity">Story</span>
+              </button>
+
+              <button 
+                onClick={() => scrollToSection('timeline')}
+                className="flex flex-col items-center gap-1 group focus:outline-none"
+              >
+                <div className="w-10 h-10 rounded-full border border-[#C5A880]/30 flex items-center justify-center bg-white/5 group-hover:bg-[#C5A880]/20 group-hover:border-[#C5A880]/60 transition-all">
+                  <Calendar className="w-4 h-4 text-[#C5A880]" />
+                </div>
+                <span className="text-[9px] uppercase tracking-[0.15em] font-semibold text-[#FAF6F0] opacity-80 group-hover:opacity-100 transition-opacity">Events</span>
+              </button>
+
+              <button 
+                onClick={() => scrollToSection('gallery')}
+                className="flex flex-col items-center gap-1 group focus:outline-none"
+              >
+                <div className="w-10 h-10 rounded-full border border-[#C5A880]/30 flex items-center justify-center bg-white/5 group-hover:bg-[#C5A880]/20 group-hover:border-[#C5A880]/60 transition-all">
+                  <ImageIcon className="w-4 h-4 text-[#C5A880]" />
+                </div>
+                <span className="text-[9px] uppercase tracking-[0.15em] font-semibold text-[#FAF6F0] opacity-80 group-hover:opacity-100 transition-opacity">Gallery</span>
+              </button>
+
+              <button 
+                onClick={handleRSVPClick}
+                className="flex flex-col items-center gap-1 group focus:outline-none"
+              >
+                <div className="w-10 h-10 rounded-full border border-[#C5A880]/30 flex items-center justify-center bg-white/5 group-hover:bg-[#C5A880]/20 group-hover:border-[#C5A880]/60 transition-all">
+                  <Clock className="w-4 h-4 text-[#C5A880]" />
+                </div>
+                <span className="text-[9px] uppercase tracking-[0.15em] font-semibold text-[#FAF6F0] opacity-80 group-hover:opacity-100 transition-opacity">RSVP</span>
+              </button>
+
+              <button 
+                onClick={() => scrollToSection('ceremony')}
+                className="flex flex-col items-center gap-1 group focus:outline-none"
+              >
+                <div className="w-10 h-10 rounded-full border border-[#C5A880]/30 flex items-center justify-center bg-white/5 group-hover:bg-[#C5A880]/20 group-hover:border-[#C5A880]/60 transition-all">
+                  <MapPin className="w-4 h-4 text-[#C5A880]" />
+                </div>
+                <span className="text-[9px] uppercase tracking-[0.15em] font-semibold text-[#FAF6F0] opacity-80 group-hover:opacity-100 transition-opacity">Venue</span>
+              </button>
+            </>
+          )}
+        </div>
+      )}
     </div>
   );
 }

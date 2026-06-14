@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import api from '../lib/api';
-import { Plus, Users, Calendar, MapPin, ExternalLink, LogOut, Search, Filter, MoreVertical, Edit3, Trash2, Palette, Heart } from 'lucide-react';
+import { Plus, Users, Calendar, MapPin, ExternalLink, LogOut, Search, Filter, MoreVertical, Edit3, Trash2, Palette, Heart, Copy } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 interface Invitation {
@@ -15,6 +15,7 @@ interface Invitation {
   total_rsvps: number;
   total_guests: number;
   custom_config?: any;
+  parent_id?: string | null;
 }
 
 export default function AdminDashboard() {
@@ -77,6 +78,36 @@ export default function AdminDashboard() {
     }
   };
 
+  const handleDuplicateTemplate = async (templateId: string) => {
+    try {
+      setLoading(true);
+      const res = await api.post(`/templates/${templateId}/duplicate`);
+      setTemplates([res.data, ...templates]);
+      alert('Template duplicated successfully!');
+    } catch (err) {
+      console.error('Failed to duplicate template', err);
+      alert('Failed to duplicate template. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleDeleteTemplate = async (templateId: string) => {
+    if (window.confirm('Are you sure you want to delete this template? This action cannot be undone.')) {
+      try {
+        setLoading(true);
+        await api.delete(`/templates/${templateId}`);
+        setTemplates(templates.filter(tpl => tpl.id !== templateId));
+        alert('Template deleted successfully!');
+      } catch (err) {
+        console.error('Failed to delete template', err);
+        alert('Failed to delete template. Please try again.');
+      } finally {
+        setLoading(false);
+      }
+    }
+  };
+
   const handleUpdateEnquiryStatus = async (id: string, newStatus: string) => {
     try {
       const res = await api.put(`/enquiries/${id}/status`, { status: newStatus });
@@ -106,15 +137,11 @@ export default function AdminDashboard() {
         <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10"></div>
         <div 
           onClick={() => navigate('/')}
-          className="cursor-pointer flex items-center gap-6 relative z-10 hover:opacity-90 transition-opacity"
+          className="cursor-pointer flex items-center gap-6 relative z-10 hover:opacity-90 transition-opacity bg-white/95 px-4 py-2 rounded-2xl"
         >
-          <div className="bg-wedding-secondary p-3 rounded-2xl shadow-lg transform rotate-3">
-            <Calendar className="w-6 h-6 text-wedding-primary" />
-          </div>
-          <div>
-            <h1 className="text-2xl font-bold uppercase tracking-[0.2em] mb-0.5">AuraVows Admin</h1>
-            <p className="text-white/40 text-[10px] uppercase tracking-widest font-bold">Premium Invitation Management</p>
-          </div>
+          <img src="/logo.png" alt="AuraVows Logo" className="h-10 w-auto object-contain" />
+          <div className="h-8 w-px bg-wedding-primary/20"></div>
+          <span className="text-sm font-bold uppercase tracking-widest text-wedding-primary">Admin Portal</span>
         </div>
         <button 
           onClick={handleLogout}
@@ -239,6 +266,11 @@ export default function AdminDashboard() {
                           <div className={`px-4 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-widest ${invite.is_active ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500'}`}>
                               {invite.is_active ? '● Active' : '○ Inactive'}
                           </div>
+                          {invite.parent_id && (
+                            <div className="px-3 py-1.5 rounded-full bg-blue-50 text-blue-600 text-[8px] font-bold uppercase tracking-widest border border-blue-200/50">
+                                Secondary Event
+                            </div>
+                          )}
                           <div className="px-3 py-1.5 rounded-full bg-wedding-accent text-wedding-gold text-[8px] font-bold uppercase tracking-widest border border-wedding-gold/20">
                               {getTemplateName(invite.template)}
                           </div>
@@ -285,6 +317,15 @@ export default function AdminDashboard() {
                           <Edit3 className="w-3.5 h-3.5" />
                           Edit Details
                         </button>
+                        {!invite.parent_id && (
+                          <button 
+                            onClick={() => navigate(`/admin/create?parent_id=${invite.id}`)}
+                            className="w-14 bg-wedding-accent text-wedding-gold rounded-2xl hover:bg-wedding-primary hover:text-white transition-all flex items-center justify-center"
+                            title="Add Secondary Event Page"
+                          >
+                            <Copy className="w-4 h-4" />
+                          </button>
+                        )}
                         <button 
                           onClick={() => window.open(`/invite/${invite.invitation_id}`, '_blank')}
                           className="w-14 bg-wedding-accent text-wedding-primary rounded-2xl hover:bg-wedding-secondary hover:text-white transition-all flex items-center justify-center"
@@ -336,13 +377,31 @@ export default function AdminDashboard() {
                         ))}
                       </div>
                     </div>
-                    <button 
-                      onClick={() => navigate(`/admin/templates/edit/${template.id}`)}
-                      className="w-full bg-wedding-secondary hover:bg-wedding-mid text-wedding-primary py-4 rounded-2xl text-[10px] font-bold uppercase tracking-widest transition-all flex items-center justify-center gap-2"
-                    >
-                      <Edit3 className="w-4 h-4" />
-                      Edit Design
-                    </button>
+                    <div className="flex gap-3">
+                      <button 
+                        onClick={() => navigate(`/admin/templates/edit/${template.id}`)}
+                        className="flex-1 bg-wedding-secondary hover:bg-wedding-mid text-wedding-primary py-4 rounded-2xl text-[10px] font-bold uppercase tracking-widest transition-all flex items-center justify-center gap-2"
+                      >
+                        <Edit3 className="w-4 h-4" />
+                        Edit Design
+                      </button>
+                      <button 
+                        onClick={() => handleDuplicateTemplate(template.id)}
+                        className="w-14 bg-wedding-accent text-wedding-primary rounded-2xl hover:bg-wedding-secondary hover:text-white transition-all flex items-center justify-center"
+                        title="Duplicate Template"
+                      >
+                        <Copy className="w-4 h-4" />
+                      </button>
+                      {!template.is_system && (
+                        <button 
+                          onClick={() => handleDeleteTemplate(template.id)}
+                          className="w-14 bg-red-50 text-red-500 rounded-2xl hover:bg-red-500 hover:text-white transition-all flex items-center justify-center"
+                          title="Delete Template"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      )}
+                    </div>
                   </div>
                 ))
               )

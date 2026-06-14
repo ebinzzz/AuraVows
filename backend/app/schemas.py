@@ -122,6 +122,7 @@ class InvitationBase(BaseModel):
     after_marriage_photos: Optional[List[str]] = []
     after_marriage_text: Optional[str] = None
     after_marriage_bg_opacity: Optional[float] = 0.4
+    parent_id: Optional[uuid.UUID] = None
 
 class InvitationCreate(InvitationBase):
     pass
@@ -180,6 +181,7 @@ class InvitationUpdate(BaseModel):
     after_marriage_photos: Optional[List[str]] = None
     after_marriage_text: Optional[str] = None
     after_marriage_bg_opacity: Optional[float] = None
+    parent_id: Optional[uuid.UUID] = None
 
 class Invitation(InvitationBase):
     id: uuid.UUID

@@ -129,14 +129,8 @@ export default function LandingPage() {
       {/* Navigation Header */}
       <header className="sticky top-0 z-40 bg-white/70 backdrop-blur-md border-b border-wedding-gold/10">
         <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
-          <div className="flex items-center gap-3 cursor-pointer" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
-            <div className="w-10 h-10 bg-wedding-primary rounded-full flex items-center justify-center border-2 border-wedding-secondary shadow-md">
-              <Heart className="w-5 h-5 text-wedding-secondary fill-wedding-secondary" />
-            </div>
-            <div>
-              <span className="font-serif text-2xl font-bold tracking-widest text-wedding-primary">AuraVows</span>
-              <span className="block text-[8px] uppercase tracking-[0.3em] text-wedding-gold font-bold">Digital Wedding Suite</span>
-            </div>
+          <div className="flex items-center cursor-pointer" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
+            <img src="/logo.png" alt="AuraVows Logo" className="h-14 w-auto object-contain" />
           </div>
 
           {/* Desktop Navigation Links */}
@@ -175,9 +169,8 @@ export default function LandingPage() {
               onClick={(e) => e.stopPropagation()}
             >
               <div className="flex items-center justify-between border-b border-gray-100 pb-6">
-                <div className="flex items-center gap-2 cursor-pointer" onClick={() => { setMobileMenuOpen(false); window.scrollTo({ top: 0, behavior: 'smooth' }); }}>
-                  <Heart className="w-6 h-6 text-wedding-gold fill-wedding-gold" />
-                  <span className="font-serif text-xl font-bold tracking-widest text-[#4A0E0E]">AuraVows</span>
+                <div className="flex items-center cursor-pointer" onClick={() => { setMobileMenuOpen(false); window.scrollTo({ top: 0, behavior: 'smooth' }); }}>
+                  <img src="/logo.png" alt="AuraVows Logo" className="h-11 w-auto object-contain" />
                 </div>
                 <button onClick={() => setMobileMenuOpen(false)} className="text-gray-400 hover:text-wedding-dark">
                   <X className="w-6 h-6" />
@@ -969,9 +962,8 @@ export default function LandingPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8 pb-12 border-b border-white/5">
           
           <div className="space-y-4">
-            <div className="flex items-center gap-2 cursor-pointer" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
-              <Heart className="w-5 h-5 text-wedding-secondary fill-wedding-secondary" />
-              <span className="font-serif text-xl font-bold tracking-widest text-white">AuraVows</span>
+            <div className="inline-flex items-center cursor-pointer" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
+              <img src="/logo.png" alt="AuraVows Logo" className="h-16 w-auto object-contain" />
             </div>
             <p className="text-white/60 text-xs leading-relaxed">
               Elegant digital wedding invitations, smart RSVP manager, and custom galleries handcrafted with love.

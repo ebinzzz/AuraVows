@@ -20,8 +20,8 @@ async def create_user(conn: asyncpg.Connection, user: schemas.UserCreate):
 async def get_invitations(conn: asyncpg.Connection):
     rows = await conn.fetch("""
         SELECT i.*, 
-        (SELECT COUNT(*) FROM rsvps WHERE invitation_id = i.invitation_id) as total_rsvps,
-        (SELECT COALESCE(SUM(guest_count), 0) FROM rsvps WHERE invitation_id = i.invitation_id AND attending = true) as total_guests
+        (SELECT COUNT(*) FROM rsvps WHERE invitation_id = COALESCE((SELECT invitation_id FROM invitations WHERE id = i.parent_id), i.invitation_id)) as total_rsvps,
+        (SELECT COALESCE(SUM(guest_count), 0) FROM rsvps WHERE invitation_id = COALESCE((SELECT invitation_id FROM invitations WHERE id = i.parent_id), i.invitation_id) AND attending = true) as total_guests
         FROM invitations i
         ORDER BY i.created_at DESC
     """)
@@ -155,6 +155,10 @@ async def get_family_notes(conn: asyncpg.Connection, invitation_id: str):
 
 # RSVP CRUD
 async def create_rsvp(conn: asyncpg.Connection, rsvp: schemas.RSVPCreate, invitation_id: str):
+    # Resolve to parent invitation_id if it exists
+    parent = await conn.fetchrow("SELECT i2.invitation_id FROM invitations i1 JOIN invitations i2 ON i1.parent_id = i2.id WHERE i1.invitation_id = $1", invitation_id)
+    if parent:
+        invitation_id = parent['invitation_id']
     rsvp_id = uuid.uuid4()
     data = rsvp.model_dump()
     columns = list(data.keys())
@@ -167,6 +171,10 @@ async def create_rsvp(conn: asyncpg.Connection, rsvp: schemas.RSVPCreate, invita
     return dict(row) if row else None
 
 async def get_rsvps(conn: asyncpg.Connection, invitation_id: str):
+    # Resolve to parent invitation_id if it exists
+    parent = await conn.fetchrow("SELECT i2.invitation_id FROM invitations i1 JOIN invitations i2 ON i1.parent_id = i2.id WHERE i1.invitation_id = $1", invitation_id)
+    if parent:
+        invitation_id = parent['invitation_id']
     rows = await conn.fetch("SELECT * FROM rsvps WHERE invitation_id = $1 ORDER BY response_date DESC", invitation_id)
     return [dict(row) for row in rows]
 

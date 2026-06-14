@@ -105,14 +105,10 @@ export default function ClientDashboard() {
                 <ArrowLeft className="w-5 h-5" />
                 </button>
             )}
-            <div>
-                <h1 
-                  onClick={() => navigate('/')}
-                  className="cursor-pointer text-lg md:text-xl font-bold uppercase tracking-widest leading-none mb-1 hover:text-wedding-lightGold transition-colors"
-                >
-                  AuraVows Tracker
-                </h1>
-                <p className="text-[8px] text-wedding-lightGold/60 uppercase tracking-[0.2em] font-bold">Premium RSVP Management</p>
+            <div onClick={() => navigate('/')} className="cursor-pointer flex items-center gap-4 bg-white/95 px-4 py-2 rounded-2xl">
+              <img src="/logo.png" alt="AuraVows Logo" className="h-8 w-auto object-contain" />
+              <div className="h-6 w-px bg-wedding-primary/20"></div>
+              <span className="text-xs font-bold uppercase tracking-widest text-wedding-primary">Tracker</span>
             </div>
             </div>
             <button 

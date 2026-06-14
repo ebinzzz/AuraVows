@@ -112,6 +112,23 @@ async def read_invitation(
         raise HTTPException(status_code=403, detail="This invitation is currently inactive")
     return db_invitation
 
+@app.get("/api/invitations/by-id/{id}", response_model=schemas.Invitation)
+async def get_invitation_by_uuid(id: uuid.UUID, conn: asyncpg.Connection = Depends(get_db)):
+    row = await conn.fetchrow("SELECT * FROM invitations WHERE id = $1", id)
+    if not row:
+        raise HTTPException(status_code=404, detail="Invitation not found")
+    import json
+    d = dict(row)
+    if d.get('custom_config') and isinstance(d['custom_config'], str):
+        d['custom_config'] = json.loads(d['custom_config'])
+    if d.get('gallery_photos') and isinstance(d['gallery_photos'], str):
+        d['gallery_photos'] = json.loads(d['gallery_photos'])
+    if d.get('event_timeline') and isinstance(d['event_timeline'], str):
+        d['event_timeline'] = json.loads(d['event_timeline'])
+    if d.get('after_marriage_photos') and isinstance(d['after_marriage_photos'], str):
+        d['after_marriage_photos'] = json.loads(d['after_marriage_photos'])
+    return d
+
 @app.put("/api/invitations/{invitation_id}", response_model=schemas.Invitation)
 async def update_invitation(
     invitation_id: str,
@@ -204,6 +221,50 @@ async def create_template(
     admin: dict = Depends(auth.get_current_admin)
 ):
     return await crud.create_template(conn, template)
+
+@app.post("/api/templates/{template_id}/duplicate", response_model=schemas.Template)
+async def duplicate_template(
+    template_id: str,
+    conn: asyncpg.Connection = Depends(get_db),
+    admin: dict = Depends(auth.get_current_admin)
+):
+    import uuid
+    try:
+        template_uuid = uuid.UUID(template_id)
+    except ValueError:
+        raise HTTPException(status_code=400, detail="Invalid template ID format")
+    
+    db_template = await crud.get_template_by_id(conn, template_uuid)
+    if not db_template:
+        raise HTTPException(status_code=404, detail="Template not found")
+    
+    duplicate_data = schemas.TemplateCreate(
+        name=f"Copy of {db_template['name']}",
+        category=db_template.get('category'),
+        config=db_template.get('config'),
+        is_system=False
+    )
+    
+    return await crud.create_template(conn, duplicate_data)
+
+@app.delete("/api/templates/{template_id}")
+async def delete_template(
+    template_id: str,
+    conn: asyncpg.Connection = Depends(get_db),
+    admin: dict = Depends(auth.get_current_admin)
+):
+    import uuid
+    try:
+        template_uuid = uuid.UUID(template_id)
+    except ValueError:
+        raise HTTPException(status_code=400, detail="Invalid template ID format")
+    
+    db_template = await crud.get_template_by_id(conn, template_uuid)
+    if not db_template:
+        raise HTTPException(status_code=404, detail="Template not found")
+        
+    await conn.execute("DELETE FROM templates WHERE id = $1", template_uuid)
+    return {"message": "Template deleted successfully"}
 
 @app.get("/api/templates/", response_model=List[schemas.Template])
 async def list_templates(conn: asyncpg.Connection = Depends(get_db)):

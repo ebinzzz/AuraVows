@@ -78,6 +78,7 @@ ALTER TABLE invitations ADD COLUMN IF NOT EXISTS after_marriage_text TEXT;
 ALTER TABLE invitations ADD COLUMN IF NOT EXISTS wedding_day_music_url VARCHAR(500);
 ALTER TABLE invitations ADD COLUMN IF NOT EXISTS live_stream_url VARCHAR(500);
 ALTER TABLE invitations ADD COLUMN IF NOT EXISTS after_marriage_bg_opacity FLOAT DEFAULT 0.4;
+ALTER TABLE invitations ADD COLUMN IF NOT EXISTS parent_id UUID REFERENCES invitations(id) ON DELETE SET NULL;
 
 -- Users Table
 CREATE TABLE IF NOT EXISTS users (

@@ -1,10 +1,4 @@
-.PHONY: install run-frontend run-backend run init-db seed-admin help
-
-# Prepend local node binaries to PATH if they exist (prevents WSL from falling back to Windows node/npm)
-LOCAL_BIN := $(CURDIR)/test-node/bin
-ifneq ($(wildcard $(LOCAL_BIN)),)
-export PATH := $(LOCAL_BIN):$(PATH)
-endif
+.PHONY: install run-frontend run-backend run init-db seed-admin migrate help
 
 # Detect package manager: use pnpm if available, otherwise fallback to npm
 PM ?= $(shell PATH="$(PATH)" command -v pnpm >/dev/null 2>&1 && echo pnpm || echo npm)
@@ -15,6 +9,7 @@ help:
 	@echo "  run-frontend - Run the React frontend (Vite)"
 	@echo "  run-backend  - Run the FastAPI backend"
 	@echo "  init-db      - Create database tables"
+	@echo "  migrate      - Run database schema migrations"
 	@echo "  seed-admin   - Create the default admin user"
 	@echo "  run          - Run both frontend and backend concurrently"
 
@@ -32,6 +27,10 @@ run-backend:
 
 init-db:
 	@echo "Creating database tables..."
+	cd backend && ./venv/bin/python app/init_db.py
+
+migrate:
+	@echo "Running database migrations..."
 	cd backend && ./venv/bin/python app/init_db.py
 
 seed-admin:
