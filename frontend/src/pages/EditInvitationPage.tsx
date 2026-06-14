@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import * as React from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import api from '../lib/api';
 import { Save, ArrowLeft, Heart, Calendar, Info, Globe, Shield, Activity, Upload, Image as ImageIcon, Trash2, Music, Plus, X, Clock, MessageSquare, Sparkles } from 'lucide-react';
