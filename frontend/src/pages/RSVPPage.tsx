@@ -58,17 +58,26 @@ export default function RSVPPage() {
   if (error === 'inactive') {
     return (
       <div className="min-h-screen flex items-center justify-center bg-[#FFFEF5] px-6">
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="max-w-md w-full text-center space-y-8 p-12 rounded-3xl bg-white shadow-2xl border border-wedding-gold/20">
-          <div className="flex justify-center">
-            <div className="w-20 h-20 bg-wedding-lightGold/30 rounded-full flex items-center justify-center">
-              <Heart className="w-10 h-10 text-wedding-gold opacity-40" />
-            </div>
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="max-w-md w-full text-center space-y-8 p-12 rounded-3xl bg-white shadow-2xl border border-wedding-gold/20 flex flex-col items-center">
+          <div className="flex justify-center mb-2">
+            <img src="/logo.png" alt="AuraVows Logo" className="h-16 w-auto object-contain" />
           </div>
+          <div className="w-12 h-px bg-wedding-gold/30 mx-auto"></div>
           <h2 className="text-3xl font-serif text-wedding-dark">Invitation Closed</h2>
           <p className="text-wedding-gray italic leading-relaxed">
             This invitation is currently inactive or the event has passed.
             Please contact the family directly for any inquiries.
           </p>
+          <div className="flex justify-center gap-4 pt-6 border-t border-gray-100 w-full">
+            <a href="https://www.instagram.com" target="_blank" rel="noopener noreferrer" className="text-wedding-gold hover:text-wedding-dark transition-all flex items-center gap-2 text-xs uppercase tracking-[0.2em] font-bold">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5">
+                <rect width="20" height="20" x="2" y="2" rx="5" ry="5"/>
+                <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/>
+                <line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/>
+              </svg>
+              <span>Follow us on Instagram</span>
+            </a>
+          </div>
           <div className="w-12 h-px bg-wedding-gold/30 mx-auto"></div>
           <p className="text-[10px] uppercase tracking-[0.3em] text-wedding-gold font-bold">Forever & Always</p>
         </motion.div>
